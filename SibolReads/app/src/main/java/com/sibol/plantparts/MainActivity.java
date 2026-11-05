@@ -7,7 +7,11 @@ import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.view.View;
 import android.view.WindowManager;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,6 +25,7 @@ public class MainActivity extends Activity {
     private Voice enVoice, filVoice;
     private Locale filLocale = null;
     private float rateMul = 1f;
+    private PermissionRequest pendingMic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,18 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setAllowFileAccess(true);
         web.setWebViewClient(new WebViewClient());
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override public void onPermissionRequest(PermissionRequest request) {
+                runOnUiThread(() -> {
+                    if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        request.grant(request.getResources());
+                    } else {
+                        pendingMic = request;
+                        requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 7);
+                    }
+                });
+            }
+        });
         web.addJavascriptInterface(new Speaker(), "AndroidTTS");
         web.setBackgroundColor(0xFFE3F3FA);
         setContentView(web);
@@ -83,6 +100,15 @@ public class MainActivity extends Activity {
 
     @Override public void onBackPressed() {
         web.evaluateJavascript("window.appBack?appBack():0", r -> { if (!"1".equals(r)) finish(); });
+    }
+
+    @Override public void onRequestPermissionsResult(int code, String[] perms, int[] results) {
+        super.onRequestPermissionsResult(code, perms, results);
+        if (code == 7 && pendingMic != null) {
+            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) pendingMic.grant(pendingMic.getResources());
+            else pendingMic.deny();
+            pendingMic = null;
+        }
     }
 
     @Override protected void onPause() { super.onPause(); if (tts != null) tts.stop(); }

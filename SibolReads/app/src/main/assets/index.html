@@ -349,7 +349,7 @@ canvas.ink{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
 .tracer svg{position:absolute;inset:0;width:100%;height:100%}
 .tracer canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .tracer.small{width:min(30vw,130px)}
-.wordtrace{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.wordtrace{width:100%;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 
 /* choose cards */
 .cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%}
@@ -418,6 +418,63 @@ canvas.ink{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
 .gpanel .card{background:var(--paper);border-radius:var(--r);padding:14px 16px;display:grid;gap:10px}
 .dance{animation:dance .6s ease-in-out infinite alternate;transform-origin:50% 90%}
 @keyframes dance{from{transform:rotate(-8deg)}to{transform:rotate(8deg) translateY(-6px)}}
+/* tabs + new sections */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tab{font-family:var(--display);font-weight:800;font-size:clamp(15px,4.2vw,19px);background:var(--paper);border-radius:18px;padding:8px 2px;box-shadow:0 4px 0 var(--line);display:grid;justify-items:center;gap:2px}
+.tab span{font-size:30px;line-height:1}
+.tab[aria-selected="true"]{background:var(--sun);box-shadow:0 4px 0 #D9A400}
+.tabhost{display:grid;gap:14px}
+.muted{color:var(--muted)}
+.wsets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wset{position:relative;background:var(--paper);border-radius:22px;padding:12px 4px;box-shadow:0 4px 0 var(--line);display:grid;justify-items:center;gap:4px}
+.wset .emo{font-size:46px}.wset b{font-family:var(--display);font-size:18px}.wset i{position:absolute;top:4px;right:8px;font-style:normal}
+.wcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;width:100%}
+.wcard2{background:var(--paper);border-radius:20px;padding:10px 4px;box-shadow:0 4px 0 var(--line);display:grid;justify-items:center;gap:4px;border:3px solid transparent}
+.wcard2 .emo{font-size:52px}.wcard2 b{font-family:var(--display);font-size:21px;font-weight:600}
+.wcard2.seen{border-color:var(--isl)}
+.wpic{display:grid;place-items:center;width:84px;height:84px}.wpic svg{width:100%;height:100%}
+.wpic.num{grid-template-rows:auto auto;width:auto;height:auto;gap:0}.wpic.num b{font-family:var(--display);font-size:46px;line-height:1}.wpic.num i{font-style:normal;font-size:13px;max-width:96px;line-height:1.1;word-break:break-all}
+.pcard3 .wpic{width:clamp(64px,20vw,96px);height:clamp(64px,20vw,96px)}
+.readword{font-family:var(--display);font-weight:800;font-size:clamp(56px,17vw,96px);color:var(--ink);background:var(--paper);border-radius:24px;padding:4px 26px;box-shadow:0 4px 0 var(--line)}
+.countbox{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:var(--paper);border-radius:24px;padding:14px;max-width:420px}
+.cnt{font-size:42px;width:60px;height:60px;border-radius:16px}.cnt.on{background:var(--sun-soft);box-shadow:inset 0 0 0 3px var(--sun)}
+.bignum{font-family:var(--display);font-weight:800;font-size:48px;line-height:1}
+.wsec{display:grid;gap:14px}
+.wgroup{background:var(--paper);border-radius:22px;padding:12px 14px;box-shadow:0 3px 0 var(--line)}
+.wgroup h3{font-size:20px;margin-bottom:8px;color:var(--isl)}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{min-width:48px;height:52px;padding:0 12px;border-radius:14px;background:var(--isl-soft);font-family:var(--display);font-weight:600;font-size:26px}
+.wchip.shp{width:56px;padding:6px}.wchip.shp svg{width:100%;height:100%}
+.wchip.wide{font-size:22px}
+.glowb{animation:glow 1s infinite;background:var(--sun)!important}
+.paper{position:relative;width:100%;height:min(56vh,520px);border-radius:20px;touch-action:none;background:#fff repeating-linear-gradient(transparent 0 58px,#C9DCEB 58px 60px);box-shadow:0 4px 0 var(--line)}
+.paper canvas{position:absolute;inset:0;width:100%;height:100%}
+.pages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pagecard{background:var(--paper);border-radius:20px;padding:8px;box-shadow:0 4px 0 var(--line);display:grid;gap:4px;justify-items:center}
+.pagecard svg{width:100%;aspect-ratio:1}.pagecard b{font-size:14px}
+.pstage{position:relative;width:min(100%,58vh,560px);aspect-ratio:1;background:#fff;border-radius:22px;box-shadow:0 4px 0 var(--line);touch-action:none;overflow:hidden;justify-self:center}
+.pstage canvas,.pstage svg{position:absolute;inset:0;width:100%;height:100%}
+.pstage svg{pointer-events:none}
+.pstage .pv{opacity:.42;mix-blend-mode:multiply}
+.ptools{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.ptool{background:var(--paper);border-radius:16px;padding:6px 10px;box-shadow:0 3px 0 var(--line);font-size:13px;font-weight:700;display:grid;justify-items:center}
+.ptool span{font-size:28px;line-height:1.1}
+.ptool[aria-pressed="true"]{background:var(--sun);box-shadow:0 3px 0 #D9A400}
+.pcols{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pcols .crayon{width:40px;height:40px}
+.psize{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
+.psize input{width:min(50vw,220px);accent-color:var(--isl)}
+.dotprev{display:inline-block;border-radius:50%;border:2px solid var(--line);max-width:60px;max-height:60px}
+.reclist{display:grid;gap:8px}
+.recrow{display:grid;grid-template-columns:44px 40px minmax(0,1fr) auto auto auto;gap:8px;align-items:center;background:var(--paper);border-radius:18px;padding:8px 10px;box-shadow:0 3px 0 var(--line)}
+.recrow.has{box-shadow:inset 0 0 0 3px var(--leaf),0 3px 0 var(--line)}
+.recrow.recording{background:#FFE4E6}
+.rl{font-family:var(--display);font-weight:800;font-size:34px;color:var(--isl);text-align:center}
+.re{font-size:30px}.rt{display:grid;min-width:0}.rt small{color:var(--muted);font-size:13px;line-height:1.25}
+.rbtn{width:44px;height:44px;border-radius:50%;background:var(--sky);font-size:20px}
+.rbtn.mic{background:var(--sun)}.rbtn[disabled]{opacity:.3}
+.rtip{background:var(--paper);border-radius:var(--r);padding:12px 16px;display:grid;gap:6px}
+.nm{font:inherit;font-size:20px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);min-width:0;flex:1}
 
 </style>
 <div id="app"></div>
@@ -607,16 +664,16 @@ const talking=on=>document.body.classList.toggle('talking',on);
 let clipTok=0,curAudio=null;
 const aKey=t=>String(t).trim().toLowerCase().replace(/\s+/g,' ');
 const aSplit=t=>String(t).trim().split(/(?<=[.!?:])\s+/).filter(Boolean);
-function playClip(f){return new Promise(res=>{const a=new Audio('audio/'+f);curAudio=a;a.playbackRate=window.RATE&&window.RATE<1?.88:1;a.onended=a.onerror=()=>res();a.play().catch(()=>res())})}
+function playClip(f){return new Promise(res=>{const a=new Audio(/^(blob:|data:)/.test(f)?f:'audio/'+f);curAudio=a;a.playbackRate=window.RATE&&window.RATE<1?.88:1;a.onended=a.onerror=()=>res();a.play().catch(()=>res())})}
 async function speakClips(text){
   const my=++clipTok;if(curAudio){curAudio.pause();curAudio=null}
   try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
   talking(true);
-  for(const s of aSplit(text)){if(my!==clipTok)return;const f=window.AUDIO_MAP[aKey(s)];if(f)await playClip(f);else await ttsRaw(s,'en')}
+  for(const s of aSplit(text)){if(my!==clipTok)return;if(window.speakSentence&&await window.speakSentence(s,()=>my!==clipTok))continue;const f=window.AUDIO_MAP[aKey(s)];if(f)await playClip(f);else await ttsRaw(s,'en')}
   if(my===clipTok)talking(false);
 }
 function speakRaw(text,vl='en'){
-  if(vl==='en'&&window.AUDIO_MAP&&voiceOn&&text)return speakClips(text);
+  if(vl==='en'&&(window.AUDIO_MAP||window.speakSentence)&&voiceOn&&text){window.AUDIO_MAP=window.AUDIO_MAP||{};return speakClips(text)}
   return ttsRaw(text,vl);
 }
 function ttsRaw(text,vl='en'){
@@ -1066,7 +1123,50 @@ function allPhrases(){
 }
 var splitSent=function(t){return String(t).trim().split(/(?<=[.!?:])\s+/).filter(Boolean)};
 var akey=function(s){return s.trim().toLowerCase().replace(/\s+/g,' ')};
-if(typeof module!=='undefined')module.exports={allPhrases:allPhrases,splitSent:splitSent,akey:akey,SOUND_IPA:SOUND_IPA};
+
+/* ---- themed words, writing and coloring (shared with the voice generator) ---- */
+var WORDSETS=[
+ {id:'feel',name:'Feelings',icon:'😀',items:[['happy','😀'],['sad','😢'],['angry','😠'],['scared','😨'],['sleepy','😴'],['silly','🤪'],['surprised','😮'],['excited','🤩']]},
+ {id:'toys',name:'Toys',icon:'🧸',items:[['ball','⚽'],['doll','🪆'],['kite','🪁'],['teddy bear','🧸'],['blocks','🧱'],['robot','🤖'],['car','🚗'],['drum','🥁'],['puzzle','🧩'],['yo-yo','🪀']]},
+ {id:'nature',name:'Nature',icon:'🌳',items:[['tree','🌳'],['flower','🌸'],['sun','☀️'],['moon','🌙'],['star','⭐'],['rain','🌧️'],['cloud','☁️'],['river','🏞️'],['mountain','⛰️'],['sea','🌊'],['leaf','🍃'],['rock','🪨']]},
+ {id:'home',name:'At home',icon:'🏠',items:[['bed','🛏️'],['chair','🪑'],['cup','☕'],['spoon','🥄'],['door','🚪'],['lamp','💡'],['book','📖'],['clock','⏰'],['bag','🎒'],['toothbrush','🪥']]},
+ {id:'animals',name:'Animals',icon:'🐶',items:[['dog','🐕'],['cat','🐈'],['fish','🐟'],['bird','🐦'],['cow','🐄'],['duck','🦆'],['frog','🐸'],['bee','🐝'],['horse','🐴'],['lion','🦁']]},
+ {id:'food',name:'Food',icon:'🍎',items:[['apple','🍎'],['banana','🍌'],['bread','🍞'],['egg','🥚'],['milk','🥛'],['rice','🍚'],['cake','🍰'],['grapes','🍇'],['carrot','🥕'],['corn','🌽']]},
+ {id:'colors',name:'Colors',icon:'🎨',items:[['red','#E8484F'],['blue','#2D78B8'],['yellow','#FFC933'],['green','#2F9E55'],['orange','#F29A1F'],['purple','#8A4FBF'],['pink','#F49AC1'],['brown','#8B5E3C'],['black','#222222'],['white','#FFFFFF']]},
+ {id:'shapes',name:'Shapes',icon:'🔺',items:[['circle','circle'],['square','square'],['triangle','triangle'],['rectangle','rectangle'],['star','star'],['heart','heart'],['diamond','diamond'],['oval','oval']]},
+ {id:'numbers',name:'Numbers',icon:'🔢',items:[['one','1'],['two','2'],['three','3'],['four','4'],['five','5'],['six','6'],['seven','7'],['eight','8'],['nine','9'],['ten','10']]},
+];
+var NUMWORD=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+var WRITE_WORDS=['cat','dog','sun','ball','doll','kite','car','bed','cup','toy','happy','sad','red','blue','tree','fish','mom','dad'];
+var SHAPE_NAMES=['circle','square','triangle','rectangle','star','heart','diamond','oval'];
+var SAY2={
+  tabRead:"Let's read! Tap the glowing circle.",tabWords:'Pick a group of words to learn!',tabWrite:'Pick something to write!',tabColor:'Pick a picture to color!',
+  cards:'Tap a card to hear the word.',quizIntro:'Read the word. Which picture is it?',
+  thatIs:function(w){return 'That is '+w+'. Try again!'},
+  countQ:'How many? Count them!',countAgain:'Count again!',
+  allWords:'You read all the words!',
+  bigLetter:function(L){return "Let's write big "+L+'!'},
+  numWrite:function(n){return "Let's write "+NUMWORD[n]+'!'},
+  shapeWrite:function(s){return "Let's draw a "+s+'!'},
+  youDid:'You did it!',paper:'Write anything you like!',
+  colorIntro:'Choose a color and a pen. Then color the picture!',pretty:'Beautiful!',
+  nameWrite:'Write your name!',
+};
+var SOUND_TOKENS=Object.keys(SOUND_IPA).sort(function(a,b){return b.length-a.length});
+var soundSplitRe=function(){return new RegExp("(?<![A-Za-z'])("+SOUND_TOKENS.join('|')+")(?![A-Za-z'])",'i')};
+var fragKey=function(f){return akey(String(f).replace(/^[\s,.:;!?]+/,''))};
+function allPhrases2(){
+  var out=[],add=function(s){out.push(s)};
+  ['tabRead','tabWords','tabWrite','tabColor','cards','quizIntro','countQ','countAgain','allWords','youDid','paper','colorIntro','pretty','nameWrite'].forEach(function(k){add(SAY2[k])});
+  WORDSETS.forEach(function(g){add(g.name);g.items.forEach(function(it){add(it[0]);add(it[0]+'!');add(SAY2.thatIs(it[0]))})});
+  NUMWORD.forEach(function(n){add(n);add(n+'!')});
+  'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('').forEach(function(L){add(SAY2.bigLetter(L))});
+  for(var i=0;i<=10;i++)add(SAY2.numWrite(i));
+  SHAPE_NAMES.forEach(function(s){add(SAY2.shapeWrite(s))});
+  WRITE_WORDS.forEach(function(w){add(SAY.writeIntro(w));add(w);add('You wrote '+w+'!')});
+  return out;
+}
+if(typeof module!=='undefined')module.exports={allPhrases:function(){return allPhrases().concat(allPhrases2())},splitSent:splitSent,akey:akey,SOUND_IPA:SOUND_IPA,soundSplitRe:soundSplitRe,fragKey:fragKey};
 
 /* ============ SIBOL READS: English phonics for young/slow readers ============ */
 lang='en';
@@ -1110,8 +1210,14 @@ function home(){
   current='home';setIsl(NODES[curIndex()].g);
   const ci=curIndex();
   let html=`<div class="rhead"><h1>Sibol <span>Reads</span></h1>${svg('0 0 100 100',SIBOL,'big-sibol dance')}</div>
-   <div class="topbtns"><button class="stickbtn" id="book">⭐ My stickers <b>${rs.stickers.length}</b></button><button class="grown" id="grown">Grown-ups (hold)</button></div>
-   <div class="trail" id="trail"><svg class="road" id="road"></svg>`;
+   <div class="topbtns"><button class="stickbtn" id="book">⭐ My stickers <b>${rs.stickers.length}</b></button><button class="grown" id="grown">Grown-ups (hold)</button></div>${tabBar()}`;
+  const tab=rs.tab||'read';
+  if(tab!=='read'){
+    app.innerHTML=html;bindTabs();$('#book').onclick=()=>go(stickerBook);holdButton($('#grown'),()=>go(grownUps));
+    const host=document.createElement('div');host.className='tabhost';app.appendChild(host);
+    ({words:wordsView,write:writeView,color:colorView})[tab](host);return;
+  }
+  html+=`<div class="trail" id="trail"><svg class="road" id="road"></svg>`;
   let lastG=-1;
   NODES.forEach((n,i)=>{
     if(n.g!==lastG){lastG=n.g;const g=GROUPS[n.g];html+=`<div class="isle" style="--isl:${g.color}">${g.name}<small>${g.letters.split('').join(' ')}</small></div>`}
@@ -1119,7 +1225,7 @@ function home(){
     html+=`<div class="nrow"><button class="node ${st}" data-i="${i}" style="left:${x}%;--isl:${GROUPS[n.g].color}" aria-label="${n.name}">${n.icon?`<span class="ic">${n.icon}</span>`:n.label}${i===ci?svg('0 0 100 100',SIBOL,'me'):''}<span class="lbl">${n.name}</span></button></div>`;
   });
   html+=`</div><p class="ptip">Tip for grown-ups: one or two levels a day is plenty. Sit with her, say the sounds together, and cheer every try.</p>`;
-  app.innerHTML=html;
+  app.innerHTML=html;bindTabs();
   drawRoad();
   app.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!unlocked(i)){sfx.oops();say(SAY.locked);return}go(()=>runNode(i))});
   $('#book').onclick=()=>go(stickerBook);
@@ -1189,12 +1295,12 @@ ACT.meet=(l,done)=>{
 function tracer(host,l,level,onDone,o={}){
   const wrap=document.createElement('div');wrap.className='tracer'+(o.small?' small':'');
   const guideW=level===1?13:11,dash=level===1;
-  wrap.innerHTML=`<svg viewBox="0 0 100 140"><path d="M4 10H96M4 100H96" stroke="#9FB8D8" stroke-width="1.2"/><path d="M4 50H96" stroke="#E8A3A6" stroke-width="1.2" stroke-dasharray="4 4"/><path d="M4 135H96" stroke="#DCE6EE" stroke-width="1"/>
+  wrap.innerHTML=`<svg viewBox="0 0 100 140">${o.plain?'':`<path d="M4 10H96M4 100H96" stroke="#9FB8D8" stroke-width="1.2"/><path d="M4 50H96" stroke="#E8A3A6" stroke-width="1.2" stroke-dasharray="4 4"/><path d="M4 135H96" stroke="#DCE6EE" stroke-width="1"/>`}
     <g class="gd"></g><g class="fl"></g><g class="hint"></g></svg><canvas></canvas>`;
   host.appendChild(wrap);
   const S=wrap.querySelector('svg'),gd=S.querySelector('.gd'),fl=S.querySelector('.fl'),hint=S.querySelector('.hint'),cv=wrap.querySelector('canvas'),cx=cv.getContext('2d');
   const NS='http://www.w3.org/2000/svg';
-  const strokes=STROKES[l].map(d=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',level===1?'#D9E3EA':'#EDF2F5');p.setAttribute('stroke-width',guideW);p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');gd.appendChild(p);
+  const strokes=strokesFor(l).map(d=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',level===1?'#D9E3EA':'#EDF2F5');p.setAttribute('stroke-width',guideW);p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');gd.appendChild(p);
     if(dash){const q=p.cloneNode();q.setAttribute('stroke','#9AAAB6');q.setAttribute('stroke-width','1.6');q.setAttribute('stroke-dasharray','3 4');gd.appendChild(q)}
     const L=p.getTotalLength(),n=Math.max(2,Math.ceil(L/4));const pts=[];for(let i=0;i<=n;i++){const q=p.getPointAtLength(L*i/n);pts.push({x:q.x,y:q.y})}return{d,L,pts}});
   let cur=0,cov=new Set(),live=[],miss=0;
@@ -1369,6 +1475,8 @@ function grownUps(){
   const nd=Object.keys(rs.done).length;
   app.innerHTML=`<div class="ashell"><button class="round" id="back">${ICON.home}</button><div class="atitle" style="flex:1">Grown-ups</div></div>
    <div class="gpanel"><div class="card"><b>Progress</b><p>${nd} of ${NODES.length} levels done · ${rs.stickers.length} stickers</p></div>
+   <div class="card"><b>Letter sounds in your voice</b><p>${Object.keys(REC).length} of 26 recorded. Record each sound once and the app uses your voice for it everywhere.</p><button class="bigbtn" id="rec" style="justify-self:start;font-size:20px">🎤 Record letter sounds</button></div>
+   <div class="card"><b>Her name</b><p>Used in Write → My name.</p><div class="row"><input id="nm" class="nm" maxlength="16" value="${(rs.name||'').replace(/"/g,'')}" placeholder="Name"><button class="pill" id="nms">Save</button></div></div>
    <div class="card"><b>Voice speed</b><div class="seg"><button data-s="0" aria-pressed="${!rs.slow}">Normal</button><button data-s="1" aria-pressed="${!!rs.slow}">Slower</button></div></div>
    <div class="card"><b>Levels</b><p>Open every level so she can practice anything, or start over from the beginning.</p>
     <div class="row"><button class="pill" id="all">${rs.all?'Lock levels again':'Open all levels'}</button><button class="pill" id="reset">Start over</button></div></div>
@@ -1376,9 +1484,252 @@ function grownUps(){
   $('#back').onclick=()=>go(home);
   app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rs.slow=b.dataset.s==='1';window.RATE=rs.slow?.82:1;try{if(window.AndroidTTS&&AndroidTTS.setRate)AndroidTTS.setRate(window.RATE)}catch(e){}saveRs();grownUps();say(SAY.slow)});
   $('#all').onclick=()=>{rs.all=!rs.all;saveRs();grownUps()};
-  $('#reset').onclick=e=>{if(e.currentTarget.dataset.sure){rs={done:{},stickers:[],slow:rs.slow};saveRs();go(home)}else{e.currentTarget.dataset.sure=1;e.currentTarget.textContent='Tap again to erase progress'}};
+  $('#rec').onclick=()=>go(recorder);
+  $('#nms').onclick=()=>{rs.name=$('#nm').value.trim();saveRs();$('#nms').textContent='Saved ✓'};
+  $('#reset').onclick=e=>{if(e.currentTarget.dataset.sure){rs={done:{},stickers:[],slow:rs.slow,name:rs.name,tab:rs.tab};saveRs();go(home)}else{e.currentTarget.dataset.sure=1;e.currentTarget.textContent='Tap again to erase progress'}};
 }
 try{if(window.AndroidTTS&&AndroidTTS.setRate)AndroidTTS.setRate(window.RATE)}catch(e){}
+
+/* ============ Sibol Reads: recorder, Words, Write, Color ============ */
+/* ---- extra tracing paths (100x140 box: top 10, base 100) ---- */
+const UPPER={A:['M50 10L22 100','M50 10L78 100','M32 70L68 70'],B:['M28 10L28 100','M28 10C80 6 80 54 28 54','M28 54C88 50 88 104 28 100'],C:['M78 28C64 4 22 10 22 55C22 100 64 106 78 82'],
+ D:['M28 10L28 100','M28 10C90 8 90 102 28 100'],E:['M72 10L28 10L28 100L72 100','M28 55L64 55'],F:['M72 10L28 10L28 100','M28 55L64 55'],G:['M78 28C64 4 22 10 22 55C22 100 66 106 78 80L78 60L54 60'],
+ H:['M26 10L26 100','M74 10L74 100','M26 55L74 55'],I:['M50 10L50 100','M32 10L68 10','M32 100L68 100'],J:['M66 10L66 78C66 106 26 106 24 80'],K:['M28 10L28 100','M74 10L28 62','M42 50L76 100'],
+ L:['M30 10L30 100L72 100'],M:['M20 100L20 10L50 70L80 10L80 100'],N:['M26 100L26 10L74 100L74 10'],O:['M50 10C16 10 16 100 50 100C84 100 84 10 50 11'],P:['M28 100L28 10','M28 10C86 6 86 62 28 58'],
+ Q:['M50 10C16 10 16 100 50 100C84 100 84 10 50 11','M56 76L80 104'],R:['M28 100L28 10','M28 10C86 6 86 62 28 58','M48 58L76 100'],S:['M74 24C62 4 26 8 26 30C26 54 76 48 76 74C76 104 32 104 24 84'],
+ T:['M20 10L80 10','M50 10L50 100'],U:['M24 10L24 70C24 108 76 108 76 70L76 10'],V:['M20 10L50 100L80 10'],W:['M12 10L30 100L50 40L70 100L88 10'],X:['M24 10L76 100','M76 10L24 100'],
+ Y:['M22 10L50 54L78 10','M50 54L50 100'],Z:['M24 10L76 10L24 100L76 100']};
+const DIGITS={0:['M50 10C18 10 18 100 50 100C82 100 82 10 50 11'],1:['M34 28L54 10L54 100'],2:['M26 30C30 4 76 4 74 34C72 56 30 78 24 100L78 100'],
+ 3:['M26 22C40 2 76 8 72 32C70 50 48 54 42 54C60 54 80 62 76 82C72 106 32 104 24 86'],4:['M62 100L62 10L20 72L82 72'],5:['M72 10L32 10L28 50C50 38 80 46 78 72C76 104 34 104 26 86'],
+ 6:['M70 18C50 2 22 20 24 62C26 106 78 104 76 70C74 42 34 44 26 66'],7:['M22 10L78 10L40 100'],8:['M50 54C24 50 26 10 50 10C74 10 76 50 50 54C20 58 22 100 50 100C78 100 80 58 50 54'],9:['M74 40C72 6 26 8 26 36C26 64 70 64 74 40L70 100']};
+const SHAPES={circle:['M50 14C24 14 12 36 12 58C12 82 28 102 50 102C74 102 88 82 88 58C88 34 76 14 50 15'],square:['M16 20L84 20L84 92L16 92L16 20'],triangle:['M50 14L90 96L10 96L50 14'],
+ rectangle:['M8 34L92 34L92 86L8 86L8 34'],star:['M50 10L61 44L96 44L68 64L78 98L50 78L22 98L32 64L4 44L39 44L50 10'],heart:['M50 98C20 76 6 58 10 38C14 16 42 14 50 34C58 14 86 16 90 38C94 58 80 76 50 98'],
+ diamond:['M50 8L86 58L50 108L14 58L50 8'],oval:['M50 10C26 10 22 40 22 58C22 78 30 106 50 106C70 106 78 78 78 58C78 40 74 10 50 11']};
+function strokesFor(k){return SHAPES[k]||(k.length===1&&/[A-Z]/.test(k)?UPPER[k]:/^\d$/.test(k)?DIGITS[k]:STROKES[k])}
+const shapeIcon=(k,fill='#FFC933')=>`<svg viewBox="0 0 100 112" aria-label="${k}"><path d="${SHAPES[k][0]}" fill="${fill}" stroke="#4A3526" stroke-width="4" stroke-linejoin="round"/></svg>`;
+const colorBlob=c=>`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8C80 8 94 30 90 54C86 80 62 94 42 90C18 86 6 66 10 44C14 22 30 8 50 8Z" fill="${c}" stroke="#4A3526" stroke-width="4"/></svg>`;
+
+/* ---- your recorded letter sounds ---- */
+const REC={};
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('sibol-rec',1);r.onupgradeneeded=()=>r.result.createObjectStore('s');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function recLoad(){try{const db=await idb();await new Promise(res=>{const c=db.transaction('s').objectStore('s').openCursor();c.onsuccess=()=>{const cur=c.result;if(!cur)return res();REC[cur.key]=URL.createObjectURL(cur.value);cur.continue()};c.onerror=()=>res()})}catch(e){}}
+async function recPut(l,blob){const db=await idb();await new Promise((res,rej)=>{const t=db.transaction('s','readwrite');t.objectStore('s').put(blob,l);t.oncomplete=res;t.onerror=()=>rej(t.error)});if(REC[l])URL.revokeObjectURL(REC[l]);REC[l]=URL.createObjectURL(blob)}
+async function recDel(l){const db=await idb();await new Promise(res=>{const t=db.transaction('s','readwrite');t.objectStore('s').delete(l);t.oncomplete=res;t.onerror=res});if(REC[l])URL.revokeObjectURL(REC[l]);delete REC[l]}
+recLoad();
+const recFor=tok=>{const l=Object.keys(LET).find(k=>LET[k][0]===tok.toLowerCase()&&REC[k]);return l?REC[l]:null};
+/* sentences with a letter sound: play your recording in the middle, natural voice around it */
+window.speakSentence=async(s,stopped)=>{
+  const parts=s.split(soundSplitRe());if(parts.length<2)return false;
+  if(!parts.some((p,i)=>i%2===1&&recFor(p)))return false;
+  for(let i=0;i<parts.length;i++){if(stopped())return true;const p=parts[i];
+    if(i%2===1){const r=recFor(p);if(r)await playClip(r);else{const f=window.AUDIO_MAP[aKey(p)];f?await playClip(f):await ttsRaw(p,'en')}}
+    else{const k=fragKey(p);if(!k)continue;const f=window.AUDIO_MAP[k];f?await playClip(f):await ttsRaw(p,'en')}}
+  return true;
+};
+const REC_TIP=l=>{const s=LET[l][0];
+  if('smnflrvz'.includes(l))return `Hold it long: “${s[0].repeat(5)}”`;
+  if('aeiou'.includes(l))return `Short sound, like the start of “${LET[l][1]}”`;
+  if(l==='x')return `“ks”, like the end of “box”`;
+  if(l==='h')return 'A soft breath out: “h”';
+  if(l==='q')return '“kw”, quick, like the start of “queen”';
+  return `Quick and short, no “uh” after it, like the start of “${LET[l][1]}”`};
+function recorder(){
+  current='screen';
+  const L=Object.keys(LET).sort();
+  app.innerHTML=`<div class="ashell"><button class="round" id="back">${ICON.home}</button><div class="atitle" style="flex:1">Record letter sounds</div></div>
+   <div class="card rtip"><b>How to record</b><p>Tap 🎤, say only the letter's sound (not its name), then tap ⏹. Play it back and re-record if needed. Your recordings replace the computer voice for that sound everywhere in the app.</p><p id="recmsg" class="muted"></p></div>
+   <div class="reclist">${L.map(l=>`<div class="recrow" data-l="${l}"><span class="rl">${l}</span><span class="re">${LET[l][2]}</span><div class="rt"><b>${LET[l][1]}</b><small>${REC_TIP(l)}</small></div>
+     <button class="rbtn mic" data-a="rec" aria-label="Record">🎤</button><button class="rbtn" data-a="play" aria-label="Play" ${REC[l]?'':'disabled'}>▶</button><button class="rbtn" data-a="del" aria-label="Delete" ${REC[l]?'':'disabled'}>🗑</button></div>`).join('')}</div>`;
+  $('#back').onclick=()=>go(grownUps);
+  let mr=null,stream=null,active=null,timer=null;
+  const msg=t=>{$('#recmsg').textContent=t};
+  const refresh=row=>{const l=row.dataset.l;row.querySelector('[data-a=play]').disabled=!REC[l];row.querySelector('[data-a=del]').disabled=!REC[l];row.classList.toggle('has',!!REC[l])};
+  app.querySelectorAll('.recrow').forEach(refresh);
+  const stop=()=>{clearTimeout(timer);if(mr&&mr.state!=='inactive')mr.stop()};
+  app.querySelectorAll('.rbtn').forEach(b=>b.onclick=async()=>{
+    const row=b.closest('.recrow'),l=row.dataset.l,a=b.dataset.a;
+    if(a==='play'&&REC[l]){stopVoice();playClip(REC[l]);return}
+    if(a==='del'){await recDel(l);refresh(row);msg(`Deleted ${l}. The computer voice will say it again.`);return}
+    if(a==='rec'){
+      if(active===l){stop();return}
+      if(active)return;
+      try{stream=stream||await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+      catch(e){msg('The microphone is not available. On the phone app, allow microphone access when asked (or in Settings › Apps › Sibol Reads › Permissions).');return}
+      stopVoice();const chunks=[];mr=new MediaRecorder(stream);active=l;row.classList.add('recording');b.textContent='⏹';msg(`Recording ${l}… say the sound now`);
+      mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      mr.onstop=async()=>{row.classList.remove('recording');b.textContent='🎤';active=null;
+        const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});
+        if(blob.size<800){msg('That was too short. Try again.');return}
+        await recPut(l,blob);refresh(row);msg(`Saved ${l}! Tap ▶ to hear it.`);playClip(REC[l])};
+      mr.start();timer=setTimeout(stop,3000);
+    }
+  });
+}
+
+/* ---- tabs on the home screen ---- */
+const TABS=[['read','📖','Read'],['words','🔤','Words'],['write','✏️','Write'],['color','🎨','Color']];
+function tabBar(){return `<div class="tabs" role="tablist">${TABS.map(([id,ic,n])=>`<button class="tab" role="tab" data-t="${id}" aria-selected="${(rs.tab||'read')===id}"><span>${ic}</span>${n}</button>`).join('')}</div>`}
+function bindTabs(){app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{rs.tab=b.dataset.t;saveRs();sfx.pop();go(home);say({read:SAY2.tabRead,words:SAY2.tabWords,write:SAY2.tabWrite,color:SAY2.tabColor}[rs.tab])})}
+function giveSticker(){const left=STICKERS.filter(s=>!rs.stickers.includes(s));const st=left.length?pick(left):pick(STICKERS);rs.stickers.push(st);saveRs();return st}
+function topShell(title,back,line){
+  current='screen';
+  app.innerHTML=`<div class="ashell"><button class="round" id="back">${ICON.home}</button><div class="atitle" style="flex:1">${title}</div><button class="round" id="hear">${ICON.speak}</button></div>`;
+  $('#back').onclick=()=>go(back||home);$('#hear').onclick=()=>say(curLine);curLine=line;if(line)say(line);
+  const box=document.createElement('div');box.className='center';app.appendChild(box);return box;
+}
+
+/* ---- WORDS ---- */
+function pic(set,it,big){
+  if(set.id==='shapes')return `<span class="wpic">${shapeIcon(it[1])}</span>`;
+  if(set.id==='colors')return `<span class="wpic">${colorBlob(it[1])}</span>`;
+  if(set.id==='numbers'){const n=+it[1];return `<span class="wpic num"><b>${n}</b><i>${'🍎'.repeat(n)}</i></span>`}
+  return `<span class="emo">${it[1]}</span>`;
+}
+function wordsView(host){
+  host.insertAdjacentHTML('beforeend',`<div class="wsets">${WORDSETS.map(g=>`<button class="wset" data-id="${g.id}"><span class="emo">${g.icon}</span><b>${g.name}</b>${(rs.words||{})[g.id]?'<i>⭐</i>':''}</button>`).join('')}</div>`);
+  host.querySelectorAll('.wset').forEach(b=>b.onclick=()=>go(()=>wordSet(b.dataset.id)));
+}
+function wordSet(id){
+  const g=WORDSETS.find(x=>x.id===id);
+  const box=topShell(g.name,home,SAY2.cards);
+  box.innerHTML=`<div class="wcards">${g.items.map((it,i)=>`<button class="wcard2" data-i="${i}">${pic(g,it)}<b>${it[0]}</b></button>`).join('')}</div>
+    <button class="bigbtn" id="quiz">${g.id==='numbers'?'Count & read!':'Read & find!'}</button>`;
+  box.querySelectorAll('.wcard2').forEach(c=>c.onclick=()=>{const it=g.items[c.dataset.i];c.classList.add('seen');sfx.pop();speakRaw(it[0]+'!')});
+  $('#quiz').onclick=()=>go(()=>wordQuiz(id));
+}
+function wordQuiz(id){
+  const g=WORDSETS.find(x=>x.id===id),N=Math.min(6,g.items.length);
+  const rounds=shuffle(g.items).slice(0,N);let r=0;
+  const box=topShell(g.name,()=>wordSet(id),null);
+  const play=()=>{if(!box.isConnected)return;
+    if(r>=N){const first=!(rs.words||{})[id];rs.words=rs.words||{};rs.words[id]=1;saveRs();sfx.cheer();confetti(140);
+      const st=first?giveSticker():null;
+      box.innerHTML=`<h2 class="atitle" style="color:var(--berry)">${pick(['Super reader!','Amazing!','You did it!'])}</h2>${st?`<div class="emo" style="font-size:110px">${st}</div><p>New sticker!</p>`:''}<button class="bigbtn" id="again">Play again</button><button class="pill" id="more">More words</button>`;
+      say(st?SAY.won:SAY2.allWords);$('#again').onclick=()=>go(()=>wordQuiz(id));$('#more').onclick=()=>go(home);return}
+    const it=rounds[r],opts=shuffle([it,...shuffle(g.items.filter(x=>x!==it)).slice(0,2)]);let wrong=0;
+    if(id==='numbers'){
+      const n=+it[1];const things=pick(['🍎','⭐','🐟','🎈','🌸','🚗']);
+      box.innerHTML=`<div class="countbox">${Array.from({length:n},(_,k)=>`<button class="cnt" data-k="${k}">${things}</button>`).join('')}</div><div class="cards3">${opts.map(o=>`<button class="pcard3 numopt" data-w="${o[0]}"><span class="bignum">${o[1]}</span><span>${o[0]}</span></button>`).join('')}</div>`;
+      curLine=SAY2.countQ;say(curLine);let counted=0;
+      box.querySelectorAll('.cnt').forEach(c=>c.onclick=()=>{if(c.classList.contains('on'))return;c.classList.add('on');counted++;speakRaw(NUMWORD[counted]+'!')});
+    }else{
+      box.innerHTML=`<div class="readword">${it[0]}</div><button class="pill" id="hint">${ICON.speak} Help me</button><div class="cards3">${opts.map(o=>`<button class="pcard3" data-w="${o[0]}">${pic(g,o)}</button>`).join('')}</div>`;
+      curLine=SAY2.quizIntro;say(curLine);$('#hint').onclick=()=>speakRaw(it[0]);
+    }
+    box.querySelectorAll('.pcard3').forEach(c=>c.onclick=()=>{
+      if(c.dataset.w===it[0]){c.classList.add('ok');sfx.ding();say(`${pick(PRAISES)} ${it[0]}!`);r++;setTimeout(play,1700)}
+      else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;
+        say(id==='numbers'?SAY2.countAgain:SAY2.thatIs(c.dataset.w));if(wrong>1)box.querySelector(`.pcard3[data-w="${it[0]}"]`).classList.add('hintme')}
+    });
+  };
+  play();
+}
+
+/* ---- WRITE ---- */
+const WSETS=[
+  {id:'lower',name:'abc',items:'abcdefghijklmnopqrstuvwxyz'.split('')},
+  {id:'upper',name:'ABC',items:'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')},
+  {id:'num',name:'123',items:'0123456789'.split('')},
+  {id:'shape',name:'Shapes',items:SHAPE_NAMES},
+  {id:'word',name:'Words',items:WRITE_WORDS},
+];
+function writeView(host){
+  const name=(rs.name||'').trim();
+  host.insertAdjacentHTML('beforeend',`<div class="wsec">${WSETS.map(s=>`<div class="wgroup"><h3>${s.name}</h3><div class="wchips">${s.items.map((x,i)=>`<button class="wchip ${s.id==='shape'?'shp':''}" data-s="${s.id}" data-i="${i}">${s.id==='shape'?shapeIcon(x,'#fff'):x}</button>`).join('')}</div></div>`).join('')}
+   <div class="wgroup"><h3>My name</h3><div class="wchips">${name?`<button class="wchip wide" data-s="name">${name}</button>`:'<p class="muted">A grown-up can add her name in Grown-ups (hold).</p>'}<button class="wchip wide" data-s="paper">📝 Free paper</button></div></div></div>`);
+  host.querySelectorAll('.wchip').forEach(b=>b.onclick=()=>{const s=b.dataset.s;if(s==='paper')return go(freePaper);if(s==='name')return go(()=>writeItem('name',0));go(()=>writeItem(s,+b.dataset.i))});
+}
+function writeItem(sid,i){
+  const set=sid==='name'?{id:'name',items:[(rs.name||'').trim()]}:WSETS.find(s=>s.id===sid);
+  const item=set.items[i];let help=rs.help!==false;
+  const word=sid==='word'||sid==='name';
+  const line=sid==='name'?SAY2.nameWrite:sid==='word'?SAY.writeIntro(item):sid==='upper'?SAY2.bigLetter(item):sid==='num'?SAY2.numWrite(+item):sid==='shape'?SAY2.shapeWrite(item):SAY.trace1(item);
+  const box=topShell(`Write <span style="color:var(--isl)">${sid==='shape'?item:item}</span>`,home,line);
+  const draw=()=>{
+    box.innerHTML=`<div class="row" style="justify-content:center"><button class="pill" id="help">${help?'💡 Help dots: on':'💡 Help dots: off'}</button><button class="pill" id="again">↺ Again</button><button class="pill" id="nxt">Next ▶</button></div><div class="wordtrace" id="wt"></div>`;
+    const host=$('#wt');
+    $('#help').onclick=()=>{help=!help;rs.help=help;saveRs();draw()};
+    $('#again').onclick=()=>draw();
+    $('#nxt').onclick=()=>go(()=>writeItem(sid,(i+1)%set.items.length));
+    const finish=()=>{sfx.cheer();confetti(70);say(`${pick(PRAISES)} ${SAY2.youDid}`);$('#nxt').classList.add('glowb')};
+    if(word){
+      const chars=[...item].filter(c=>strokesFor(c)||strokesFor(c.toLowerCase()));let k=0;
+      const nextC=()=>{if(k>=chars.length)return finish();let c=chars[k++];if(!strokesFor(c))c=c.toLowerCase();tracer(host,c,help?1:2,()=>{const l=c.toLowerCase();if(LET[l])speakRaw(snd(l));setTimeout(nextC,450)},{small:true})};
+      nextC();
+    }else tracer(host,item,help?1:2,finish,{plain:sid==='shape'});
+  };
+  draw();
+}
+function freePaper(){
+  const box=topShell('Free paper',home,SAY2.paper);
+  box.innerHTML=`<div class="paper" id="paper"><canvas></canvas></div><div class="row" style="justify-content:center">${['#183126','#2D78B8','#E8484F','#2F9E55','#8A4FBF'].map((c,i)=>`<button class="crayon" data-c="${c}" style="background:${c}" aria-pressed="${i===0}"></button>`).join('')}<button class="pill" id="clr">Clear</button></div>`;
+  const p=$('#paper'),cv=p.querySelector('canvas'),cx=cv.getContext('2d');let col='#183126',last=null;
+  const prep=()=>{fitCanvas(cv);const d=devicePixelRatio||1;cx.setTransform(d,0,0,d,0,0)};requestAnimationFrame(prep);
+  box.querySelectorAll('.crayon').forEach(b=>b.onclick=()=>{col=b.dataset.c;box.querySelectorAll('.crayon').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  $('#clr').onclick=()=>{cx.save();cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.restore()};
+  attachInk(p,{down(q){last=q},move(q){cx.strokeStyle=col;cx.lineCap='round';cx.lineWidth=strokeWidth(q,5);cx.beginPath();cx.moveTo(last.x,last.y);cx.lineTo(q.x,q.y);cx.stroke();last=q},up(){}});
+}
+
+/* ---- COLOR ---- */
+const LA='fill="none" stroke="#222" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+const PAGES=[
+ {id:'garden',name:'Sunny garden',art:`<circle cx="60" cy="60" r="30"/><path d="M60 14V4M60 116V106M14 60H4M116 60H106M27 27 20 20M93 27 100 20M27 93 20 100M93 93 100 100"/><path d="M180 70C170 50 200 40 210 55C225 40 255 50 245 70C260 75 255 95 235 95H190C170 95 165 75 180 70Z"/>${[[70,200],[150,180],[230,205]].map(([x,y])=>`<path d="M${x} ${y+20}V290"/><circle cx="${x}" cy="${y}" r="12"/>${[0,72,144,216,288].map(a=>`<ellipse cx="${x}" cy="${y-24}" rx="11" ry="16" transform="rotate(${a} ${x} ${y})"/>`).join('')}<path d="M${x} ${y+60}C${x-30} ${y+40} ${x-30} ${y+70} ${x} ${y+70}"/>`).join('')}<path d="M0 290H300"/>`},
+ {id:'house',name:'My house',art:`<path d="M40 140L130 70L220 140"/><rect x="56" y="140" width="148" height="130"/><rect x="110" y="200" width="40" height="70"/><rect x="72" y="160" width="30" height="30"/><rect x="160" y="160" width="30" height="30"/><path d="M87 160V190M72 175H102M175 160V190M160 175H190"/><path d="M250 270V200"/><circle cx="250" cy="180" r="34"/><path d="M0 270H300"/><path d="M170 92V66H190V108"/>`},
+ {id:'cat',name:'Kitty cat',art:`<ellipse cx="150" cy="200" rx="70" ry="60"/><circle cx="150" cy="110" r="52"/><path d="M108 82 104 40 134 64M192 82 196 40 166 64"/><circle cx="130" cy="106" r="7"/><circle cx="170" cy="106" r="7"/><path d="M144 124 150 130 156 124M150 130C146 140 136 140 132 134M150 130C154 140 164 140 168 134"/><path d="M96 120H60M98 132H64M204 120H240M202 132H236"/><path d="M216 220C270 210 270 150 240 150"/><path d="M110 254V276M190 254V276"/>`},
+ {id:'fish',name:'Under the sea',art:`<path d="M60 130C100 80 170 90 200 130C170 170 100 180 60 130Z"/><path d="M200 130 250 100V160Z"/><circle cx="95" cy="122" r="7"/><path d="M130 100C140 120 140 140 130 160M160 104C170 120 170 140 160 156"/><circle cx="60" cy="70" r="8"/><circle cx="76" cy="44" r="12"/><circle cx="54" cy="18" r="6"/><path d="M20 290C30 250 10 230 26 200M50 290C60 260 44 240 56 220M260 290C250 250 272 230 256 196"/><path d="M0 250C40 240 60 260 100 250S160 240 200 252 260 260 300 248"/><path d="M200 220C220 200 250 205 262 222C250 240 220 242 200 220Z"/><path d="M262 222 280 210V234Z"/>`},
+ {id:'car',name:'Fast car',art:`<path d="M30 200V160C30 150 40 145 60 145L90 100H200L240 145H270C280 145 285 150 285 160V200Z"/><path d="M100 110H145V145H82ZM155 110H195L228 145H155Z"/><circle cx="85" cy="205" r="30"/><circle cx="85" cy="205" r="12"/><circle cx="230" cy="205" r="30"/><circle cx="230" cy="205" r="12"/><path d="M0 238H300"/><path d="M265 160H280"/>`},
+ {id:'butterfly',name:'Butterfly',art:`<path d="M150 90V220"/><circle cx="150" cy="80" r="12"/><path d="M146 70C140 50 126 40 116 40M154 70C160 50 174 40 184 40"/><path d="M146 110C110 40 30 50 40 110C46 150 110 150 146 130Z"/><path d="M154 110C190 40 270 50 260 110C254 150 190 150 154 130Z"/><path d="M146 150C100 140 60 190 90 230C110 250 140 220 146 180Z"/><path d="M154 150C200 140 240 190 210 230C190 250 160 220 154 180Z"/><circle cx="90" cy="100" r="16"/><circle cx="210" cy="100" r="16"/><circle cx="104" cy="200" r="10"/><circle cx="196" cy="200" r="10"/>`},
+ {id:'rocket',name:'Rocket ship',art:`<path d="M150 20C190 60 196 140 186 210H114C104 140 110 60 150 20Z"/><circle cx="150" cy="100" r="22"/><path d="M114 170 80 220 116 214M186 170 220 220 184 214"/><path d="M126 210 116 260 138 240 150 280 162 240 184 260 174 210"/><path d="M40 60l6 14 14 6-14 6-6 14-6-14-14-6 14-6zM250 120l6 14 14 6-14 6-6 14-6-14-14-6 14-6zM60 220l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/>`},
+ {id:'tree',name:'Apple tree',art:`<path d="M130 290V190C130 180 120 170 110 165M170 290V190C170 180 180 170 190 165"/><path d="M80 170C40 170 40 110 80 110C70 60 140 40 160 76C190 40 260 70 240 120C280 140 260 190 220 180C200 200 160 200 150 184C130 200 90 196 80 170Z"/>${[[100,130],[150,110],[200,130],[130,160],[180,165],[220,150]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="12"/><path d="M${x} ${y-12}V${y-18}"/>`).join('')}<path d="M0 290H300"/>`},
+ {id:'bear',name:'Teddy bear',art:`<circle cx="150" cy="100" r="54"/><circle cx="104" cy="58" r="20"/><circle cx="196" cy="58" r="20"/><ellipse cx="150" cy="118" rx="22" ry="16"/><circle cx="150" cy="110" r="6"/><circle cx="130" cy="88" r="6"/><circle cx="170" cy="88" r="6"/><path d="M142 124C146 130 154 130 158 124"/><ellipse cx="150" cy="214" rx="62" ry="62"/><ellipse cx="150" cy="220" rx="32" ry="34"/><circle cx="90" cy="180" r="22"/><circle cx="210" cy="180" r="22"/><circle cx="104" cy="268" r="24"/><circle cx="196" cy="268" r="24"/>`},
+ {id:'rainbow',name:'Rainbow',art:`<path d="M30 230A120 120 0 0 1 270 230"/><path d="M55 230A95 95 0 0 1 245 230"/><path d="M80 230A70 70 0 0 1 220 230"/><path d="M105 230A45 45 0 0 1 195 230"/><path d="M10 240C0 220 30 200 50 214C60 196 96 204 92 228C104 232 100 252 84 252H24C10 252 4 244 10 240Z"/><path d="M216 240C206 220 236 200 256 214C266 196 302 204 298 228C310 232 306 252 290 252H230C216 252 210 244 216 240Z"/>`},
+ {id:'shapes',name:'Shapes',art:`<circle cx="70" cy="70" r="46"/><rect x="170" y="26" width="90" height="90"/><path d="M70 160 120 250H20Z"/><path d="M210 150L222 186H260L229 208L241 246L210 222L179 246L191 208L160 186H198Z"/><path d="M150 290C128 274 118 262 120 248C122 234 142 232 150 246C158 232 178 234 180 248C182 262 172 274 150 290Z"/>`},
+ {id:'numbers',name:'Numbers 1 2 3',art:`<text x="40" y="150" font-size="130" font-family="Grandstander,Arial Rounded MT Bold,sans-serif" font-weight="800" stroke-width="4">1</text><text x="115" y="150" font-size="130" font-family="Grandstander,Arial Rounded MT Bold,sans-serif" font-weight="800" stroke-width="4">2</text><text x="200" y="150" font-size="130" font-family="Grandstander,Arial Rounded MT Bold,sans-serif" font-weight="800" stroke-width="4">3</text>${[[60],[125,170],[205,240,275]].map((xs,i)=>xs.map(x=>`<circle cx="${x}" cy="230" r="16"/>`).join('')).join('')}`},
+];
+function colorView(host){
+  host.insertAdjacentHTML('beforeend',`<div class="pages">${PAGES.map(p=>`<button class="pagecard" data-id="${p.id}"><svg viewBox="0 0 300 300"><g ${LA}>${p.art}</g></svg><b>${p.name}</b></button>`).join('')}</div>`);
+  host.querySelectorAll('.pagecard').forEach(b=>b.onclick=()=>go(()=>painter(b.dataset.id)));
+}
+const PCOLS=['#E8484F','#F29A1F','#FFC933','#9BD86F','#2F9E55','#5AC8FA','#2D78B8','#8A4FBF','#F49AC1','#8B5E3C','#222222','#FFFFFF'];
+const TOOLS=[['crayon','🖍️','Crayon'],['marker','🖊️','Marker'],['water','🖌️','Watercolor'],['high','🖍','Highlighter'],['eraser','🧽','Eraser']];
+function painter(id){
+  const pg=PAGES.find(p=>p.id===id);
+  const box=topShell(pg.name,home,SAY2.colorIntro);
+  let tool='crayon',col=PCOLS[0],size=16,undo=[];
+  box.innerHTML=`<div class="pstage" id="ps"><canvas class="pc"></canvas><canvas class="pv"></canvas><svg viewBox="0 0 300 300"><g ${LA}>${pg.art}</g></svg></div>
+    <div class="ptools">${TOOLS.map(([t,ic,n])=>`<button class="ptool" data-t="${t}" aria-pressed="${t===tool}"><span>${ic}</span>${n}</button>`).join('')}</div>
+    <div class="pcols">${PCOLS.map(c=>`<button class="crayon" data-c="${c}" style="background:${c}" aria-pressed="${c===col}" aria-label="color"></button>`).join('')}</div>
+    <div class="psize"><span class="dotprev" id="dp"></span><input type="range" id="sz" min="3" max="60" value="${size}" aria-label="Tip size"><button class="pill" id="un">↶ Undo</button><button class="pill" id="cl">Clear</button></div>`;
+  const ps=$('#ps'),cv=ps.querySelector('.pc'),pv=ps.querySelector('.pv'),cx=cv.getContext('2d'),vx=pv.getContext('2d');
+  const key='paint.'+id;
+  const prep=()=>{const ch=fitCanvas(cv);fitCanvas(pv);const d=devicePixelRatio||1;cx.setTransform(d,0,0,d,0,0);vx.setTransform(d,0,0,d,0,0);return ch};
+  requestAnimationFrame(()=>{prep();try{const s=localStorage.getItem('sibol.'+key);if(s){const im=new Image();im.onload=()=>{cx.save();cx.setTransform(1,0,0,1,0,0);cx.drawImage(im,0,0,cv.width,cv.height);cx.restore()};im.src=s}}catch(e){}});
+  const save=()=>{try{localStorage.setItem('sibol.'+key,cv.toDataURL('image/png'))}catch(e){}};
+  const showDot=()=>{const d=$('#dp');d.style.width=d.style.height=Math.max(6,size)+'px';d.style.background=tool==='eraser'?'#fff':col;d.style.opacity=tool==='high'?.45:1};
+  showDot();
+  box.querySelectorAll('.ptool').forEach(b=>b.onclick=()=>{tool=b.dataset.t;box.querySelectorAll('.ptool').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx.pop();showDot()});
+  box.querySelectorAll('.pcols .crayon').forEach(b=>b.onclick=()=>{col=b.dataset.c;if(tool==='eraser')tool='crayon';box.querySelectorAll('.pcols .crayon').forEach(x=>x.setAttribute('aria-pressed',x===b));box.querySelectorAll('.ptool').forEach(x=>x.setAttribute('aria-pressed',x.dataset.t===tool));showDot()});
+  $('#sz').oninput=e=>{size=+e.target.value;showDot()};
+  $('#un').onclick=()=>{const u=undo.pop();if(u){cx.putImageData(u,0,0);save()}};
+  $('#cl').onclick=e=>{if(e.currentTarget.dataset.sure){undo.push(cx.getImageData(0,0,cv.width,cv.height));cx.save();cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.restore();save();e.currentTarget.textContent='Clear';delete e.currentTarget.dataset.sure}else{e.currentTarget.dataset.sure=1;e.currentTarget.textContent='Tap again to clear'}};
+  let last=null,pts=[];
+  const W=p=>strokeWidth(p,size);
+  const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${n>>8&255},${n&255},${a})`};
+  function seg(a,b){
+    const w=W(b);
+    if(tool==='marker'||tool==='eraser'){cx.save();cx.globalCompositeOperation=tool==='eraser'?'destination-out':'source-over';cx.strokeStyle=col;cx.lineWidth=w;cx.lineCap='round';cx.lineJoin='round';cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();cx.restore()}
+    else if(tool==='crayon'){const L=Math.max(1,dist(a,b)),n=Math.ceil(L/2);cx.save();cx.fillStyle=col;
+      for(let i=0;i<=n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;for(let k=0;k<Math.max(4,w/1.5);k++){const r=Math.random()*w/2,t=Math.random()*6.283;cx.globalAlpha=.25+Math.random()*.5;cx.fillRect(x+Math.cos(t)*r,y+Math.sin(t)*r,1.6,1.6)}}cx.restore()}
+    else if(tool==='water'){const L=Math.max(1,dist(a,b)),step=Math.max(2,w/5),n=Math.ceil(L/step);cx.save();
+      for(let i=0;i<=n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n,r=w*(.45+Math.random()*.2);const g=cx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,.09));g.addColorStop(.7,rgba(col,.06));g.addColorStop(1,rgba(col,0));cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,7);cx.fill()}cx.restore()}
+    else if(tool==='high'){vx.save();vx.clearRect(0,0,pv.width,pv.height);vx.strokeStyle=col;vx.lineWidth=w*1.4;vx.lineCap='square';vx.lineJoin='round';vx.beginPath();vx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>vx.lineTo(p.x,p.y));vx.stroke();vx.restore()}
+  }
+  attachInk(ps,{
+    down(p){prep();undo.push(cx.getImageData(0,0,cv.width,cv.height));if(undo.length>12)undo.shift();last=p;pts=[p];seg(p,{...p,x:p.x+.1})},
+    move(p){pts.push(p);seg(last,p);last=p},
+    up(){if(tool==='high'){cx.save();cx.setTransform(1,0,0,1,0,0);cx.globalAlpha=.42;cx.globalCompositeOperation='multiply';cx.drawImage(pv,0,0);cx.restore();vx.save();vx.setTransform(1,0,0,1,0,0);vx.clearRect(0,0,pv.width,pv.height);vx.restore()}save()}
+  });
+}
 
 go(home);
 

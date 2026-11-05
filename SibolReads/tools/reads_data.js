@@ -88,4 +88,47 @@ function allPhrases(){
 }
 var splitSent=function(t){return String(t).trim().split(/(?<=[.!?:])\s+/).filter(Boolean)};
 var akey=function(s){return s.trim().toLowerCase().replace(/\s+/g,' ')};
-if(typeof module!=='undefined')module.exports={allPhrases:allPhrases,splitSent:splitSent,akey:akey,SOUND_IPA:SOUND_IPA};
+
+/* ---- themed words, writing and coloring (shared with the voice generator) ---- */
+var WORDSETS=[
+ {id:'feel',name:'Feelings',icon:'😀',items:[['happy','😀'],['sad','😢'],['angry','😠'],['scared','😨'],['sleepy','😴'],['silly','🤪'],['surprised','😮'],['excited','🤩']]},
+ {id:'toys',name:'Toys',icon:'🧸',items:[['ball','⚽'],['doll','🪆'],['kite','🪁'],['teddy bear','🧸'],['blocks','🧱'],['robot','🤖'],['car','🚗'],['drum','🥁'],['puzzle','🧩'],['yo-yo','🪀']]},
+ {id:'nature',name:'Nature',icon:'🌳',items:[['tree','🌳'],['flower','🌸'],['sun','☀️'],['moon','🌙'],['star','⭐'],['rain','🌧️'],['cloud','☁️'],['river','🏞️'],['mountain','⛰️'],['sea','🌊'],['leaf','🍃'],['rock','🪨']]},
+ {id:'home',name:'At home',icon:'🏠',items:[['bed','🛏️'],['chair','🪑'],['cup','☕'],['spoon','🥄'],['door','🚪'],['lamp','💡'],['book','📖'],['clock','⏰'],['bag','🎒'],['toothbrush','🪥']]},
+ {id:'animals',name:'Animals',icon:'🐶',items:[['dog','🐕'],['cat','🐈'],['fish','🐟'],['bird','🐦'],['cow','🐄'],['duck','🦆'],['frog','🐸'],['bee','🐝'],['horse','🐴'],['lion','🦁']]},
+ {id:'food',name:'Food',icon:'🍎',items:[['apple','🍎'],['banana','🍌'],['bread','🍞'],['egg','🥚'],['milk','🥛'],['rice','🍚'],['cake','🍰'],['grapes','🍇'],['carrot','🥕'],['corn','🌽']]},
+ {id:'colors',name:'Colors',icon:'🎨',items:[['red','#E8484F'],['blue','#2D78B8'],['yellow','#FFC933'],['green','#2F9E55'],['orange','#F29A1F'],['purple','#8A4FBF'],['pink','#F49AC1'],['brown','#8B5E3C'],['black','#222222'],['white','#FFFFFF']]},
+ {id:'shapes',name:'Shapes',icon:'🔺',items:[['circle','circle'],['square','square'],['triangle','triangle'],['rectangle','rectangle'],['star','star'],['heart','heart'],['diamond','diamond'],['oval','oval']]},
+ {id:'numbers',name:'Numbers',icon:'🔢',items:[['one','1'],['two','2'],['three','3'],['four','4'],['five','5'],['six','6'],['seven','7'],['eight','8'],['nine','9'],['ten','10']]},
+];
+var NUMWORD=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+var WRITE_WORDS=['cat','dog','sun','ball','doll','kite','car','bed','cup','toy','happy','sad','red','blue','tree','fish','mom','dad'];
+var SHAPE_NAMES=['circle','square','triangle','rectangle','star','heart','diamond','oval'];
+var SAY2={
+  tabRead:"Let's read! Tap the glowing circle.",tabWords:'Pick a group of words to learn!',tabWrite:'Pick something to write!',tabColor:'Pick a picture to color!',
+  cards:'Tap a card to hear the word.',quizIntro:'Read the word. Which picture is it?',
+  thatIs:function(w){return 'That is '+w+'. Try again!'},
+  countQ:'How many? Count them!',countAgain:'Count again!',
+  allWords:'You read all the words!',
+  bigLetter:function(L){return "Let's write big "+L+'!'},
+  numWrite:function(n){return "Let's write "+NUMWORD[n]+'!'},
+  shapeWrite:function(s){return "Let's draw a "+s+'!'},
+  youDid:'You did it!',paper:'Write anything you like!',
+  colorIntro:'Choose a color and a pen. Then color the picture!',pretty:'Beautiful!',
+  nameWrite:'Write your name!',
+};
+var SOUND_TOKENS=Object.keys(SOUND_IPA).sort(function(a,b){return b.length-a.length});
+var soundSplitRe=function(){return new RegExp("(?<![A-Za-z'])("+SOUND_TOKENS.join('|')+")(?![A-Za-z'])",'i')};
+var fragKey=function(f){return akey(String(f).replace(/^[\s,.:;!?]+/,''))};
+function allPhrases2(){
+  var out=[],add=function(s){out.push(s)};
+  ['tabRead','tabWords','tabWrite','tabColor','cards','quizIntro','countQ','countAgain','allWords','youDid','paper','colorIntro','pretty','nameWrite'].forEach(function(k){add(SAY2[k])});
+  WORDSETS.forEach(function(g){add(g.name);g.items.forEach(function(it){add(it[0]);add(it[0]+'!');add(SAY2.thatIs(it[0]))})});
+  NUMWORD.forEach(function(n){add(n);add(n+'!')});
+  'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('').forEach(function(L){add(SAY2.bigLetter(L))});
+  for(var i=0;i<=10;i++)add(SAY2.numWrite(i));
+  SHAPE_NAMES.forEach(function(s){add(SAY2.shapeWrite(s))});
+  WRITE_WORDS.forEach(function(w){add(SAY.writeIntro(w));add(w);add('You wrote '+w+'!')});
+  return out;
+}
+if(typeof module!=='undefined')module.exports={allPhrases:function(){return allPhrases().concat(allPhrases2())},splitSent:splitSent,akey:akey,SOUND_IPA:SOUND_IPA,soundSplitRe:soundSplitRe,fragKey:fragKey};
