@@ -45,14 +45,22 @@ def phon(text):
 
 def phonemes_for(text):
     out = []
+    def gap():
+        if out and out[-1] != ' ':
+            out.append(' ')
     for i, part in enumerate(pat.split(text)):
-        if not part:
+        if not part or not part.strip():
             continue
         if i % 2 == 1:
-            ipa = sounds[part.lower()]
-            out += ['ˈ'] + [c for c in ipa if c in idmap]
+            gap()
+            out += ['ˈ'] + [c for c in sounds[part.lower()] if c in idmap]
         else:
-            out += phon(speakable(part))
+            lead = re.match(r'^\s*([,.!?:;]*)', part).group(1)
+            out += [c for c in lead if c in idmap]
+            rest = part[len(re.match(r'^\s*[,.!?:;]*', part).group(0)):]
+            if rest.strip():
+                gap()
+                out += phon(speakable(rest))
     bad = [p for p in out if p not in idmap]
     if bad:
         print('  skipping unknown phonemes', set(bad), 'in', text)
@@ -87,8 +95,8 @@ for n, s in enumerate(data['sentences']):
                     'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,apad=pad_dur=0.08',
                     '-ac', '1', '-c:a', 'libopus', '-b:a', '32k', os.path.join(OUT, name)], check=True)
     amap[s['key']] = name
-    if n < 3 or pat.search(s['text']):
-        if n < 40:
+    if n < 3 or (pat.search(s['text']) and n % 25 == 0):
+        if True:
             print(repr(s['text']), '->', ''.join(ph))
 open(os.path.join(OUT, 'manifest.js'), 'w').write('window.AUDIO_MAP=' + json.dumps(amap, ensure_ascii=False) + ';')
 print('recorded', len(amap), 'sentences')
