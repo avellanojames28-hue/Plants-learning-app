@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}</style><script src="audio/manifest.js"></script></head><body>
 <title>Sibol Reads</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -603,7 +603,23 @@ if('speechSynthesis' in window){findVoices();speechSynthesis.onvoiceschanged=fin
 let pend={},seq=0;
 window.__ttsDone=id=>{const f=pend[id];if(f){delete pend[id];f()}};
 const talking=on=>document.body.classList.toggle('talking',on);
+/* natural-voice clips: if the app ships pre-recorded sentences (window.AUDIO_MAP), play those; anything missing falls back to the phone voice */
+let clipTok=0,curAudio=null;
+const aKey=t=>String(t).trim().toLowerCase().replace(/\s+/g,' ');
+const aSplit=t=>String(t).trim().split(/(?<=[.!?:])\s+/).filter(Boolean);
+function playClip(f){return new Promise(res=>{const a=new Audio('audio/'+f);curAudio=a;a.playbackRate=window.RATE&&window.RATE<1?.88:1;a.onended=a.onerror=()=>res();a.play().catch(()=>res())})}
+async function speakClips(text){
+  const my=++clipTok;if(curAudio){curAudio.pause();curAudio=null}
+  try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
+  talking(true);
+  for(const s of aSplit(text)){if(my!==clipTok)return;const f=window.AUDIO_MAP[aKey(s)];if(f)await playClip(f);else await ttsRaw(s,'en')}
+  if(my===clipTok)talking(false);
+}
 function speakRaw(text,vl='en'){
+  if(vl==='en'&&window.AUDIO_MAP&&voiceOn&&text)return speakClips(text);
+  return ttsRaw(text,vl);
+}
+function ttsRaw(text,vl='en'){
   return new Promise(res=>{
     const words=String(text).split(/\s+/).length, est=700+words*(vl==='fil'?470:400);
     let fin=false,to;
@@ -629,6 +645,7 @@ function speakRaw(text,vl='en'){
   });
 }
 function stopVoice(){
+  clipTok++;if(curAudio){try{curAudio.pause()}catch(e){}curAudio=null}
   try{if(window.AndroidTTS&&AndroidTTS.stop)AndroidTTS.stop();else if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}
   const f=Object.values(pend);pend={};f.forEach(x=>x());talking(false);
 }
@@ -959,24 +976,19 @@ function card(id,l){
     <div class="lbtns"><button class="lbtn" data-id="${id}" data-act="learn">${btn}</button></div></div>`;
 }
 
-/* ============ SIBOL READS: English phonics for young/slow readers ============ */
-lang='en';
-let rs=store.get('reads',{done:{},stickers:[],slow:false});
-const saveRs=()=>store.set('reads',rs);
-window.RATE=rs.slow?.82:1;
-
-/* letter data: sound to say, keyword + emoji, a 2nd word for the sound hunt */
-const LET={
+/* Sibol Reads data + every sentence the app speaks (shared with the audio generator; no dependencies) */
+var LET={
  s:['sss','sun','☀️','snake','🐍'],a:['ah','apple','🍎','ant','🐜'],t:['tuh','tiger','🐯','tent','⛺'],p:['puh','pig','🐖','pizza','🍕'],i:['ih','iguana','🦎','insect','🐛'],n:['nnn','nest','🪺','nose','👃'],
  m:['mmm','moon','🌙','monkey','🐒'],d:['duh','dog','🐕','duck','🦆'],g:['guh','goat','🐐','gift','🎁'],o:['aw','octopus','🐙','otter','🦦'],c:['kuh','cat','🐈','cake','🎂'],k:['kuh','kite','🪁','key','🔑'],
  e:['eh','egg','🥚','elephant','🐘'],u:['uh','umbrella','☂️','up','⬆️'],r:['rrr','rabbit','🐇','rainbow','🌈'],h:['huh','hat','🎩','horse','🐎'],b:['buh','ball','⚽','bus','🚌'],f:['fff','fish','🐟','frog','🐸'],l:['lll','lion','🦁','leaf','🍃'],
  j:['juh','juice','🧃','jellyfish','🪼'],v:['vvv','van','🚐','violin','🎻'],w:['wuh','whale','🐋','watermelon','🍉'],x:['ks','box','📦','fox','🦊'],y:['yuh','yo-yo','🪀','yarn','🧶'],z:['zzz','zebra','🦓','zero','0️⃣'],q:['kwuh','queen','👸','queen','👸'],
 };
-const snd=l=>LET[l][0];
-const WORDPIC={pan:'🍳',pin:'📌',tap:'🚰',ant:'🐜',tin:'🥫',nap:'😴',cat:'🐈',dog:'🐕',map:'🗺️',pig:'🐖',pot:'🍲',cap:'🧢',sad:'😢',
+/* the true sound of each letter, in IPA, for the natural voice generator */
+var SOUND_IPA={sss:'sːː',ah:'æː',tuh:'tə',puh:'pə',ih:'ɪː',nnn:'nːː',mmm:'mːː',duh:'də',guh:'ɡə',aw:'ɑː',kuh:'kə',eh:'ɛː',uh:'ʌː',rrr:'ɹːː',huh:'hə',buh:'bə',fff:'fːː',lll:'lːː',juh:'dʒə',vvv:'vːː',wuh:'wə',ks:'ks',yuh:'jə',zzz:'zːː',kwuh:'kwə'};
+var WORDPIC={pan:'🍳',pin:'📌',tap:'🚰',ant:'🐜',tin:'🥫',nap:'😴',cat:'🐈',dog:'🐕',map:'🗺️',pig:'🐖',pot:'🍲',cap:'🧢',sad:'😢',
   bed:'🛏️',sun:'☀️',hen:'🐔',bus:'🚌',cup:'☕',net:'🥅',hat:'🎩',bat:'🦇',fan:'🪭',log:'🪵',bug:'🐛',leg:'🦵',red:'🟥',
   box:'📦',fox:'🦊',van:'🚐',web:'🕸️',jet:'🛩️',yam:'🍠',zip:'🤐',six:'6️⃣',wig:'💇'};
-const GROUPS=[
+var GROUPS=[
   {name:'Sunny Island',color:'#2F9E55',soft:'#DDF2E3',letters:'satpin',blend:['pan','pin','tap','ant','tin','nap'],spell:['pan','tap','pin','tin','ant'],write:['pin','tap','pan']},
   {name:'Berry Bay',color:'#D9485F',soft:'#FBE0E4',letters:'mdgock',sight:['I','see','a','the'],blend:['cat','dog','map','pig','pot','cap'],spell:['cat','dog','pig','map','pot'],
     read:[['I see a cat.','🐈','🐕'],['I see a pig.','🐖','🐐'],['I see the map.','🗺️','🍳'],['I see a dog.','🐕','🐈']]},
@@ -985,6 +997,83 @@ const GROUPS=[
   {name:'Star Mountain',color:'#8A4FBF',soft:'#F0E6FA',letters:'jvwxyzq',blend:['box','fox','van','web','jet','six'],spell:['box','fox','van','jet','web'],write:['fox','van','web'],
     read:[['The fox is in a box.','🦊📦','🐕🛏️'],['I can see a jet.','🛩️','🚌'],['The van is red.','🚐','🚌']]},
 ];
+var SIGHT_POOL=['I','a','the','see','is','can','my','on','to','it','in','at'];
+var PRAISES=['Great job!','Yes!','You got it!','Super!','Wow!','Well done!'];
+var STICKER_MAX=48;
+var snd=function(l){return LET[l][0]};
+var spellOut=function(w){return w.toUpperCase().split('').join(', ')};
+var SAY={
+  hi:"Hi! I'm Sibol. Let's learn to read together! Tap the glowing circle.",
+  back:'Welcome back! Tap the glowing circle to play.',
+  locked:'Finish the glowing level first!',
+  meet:function(l){return 'This is the letter '+l+'. It says '+snd(l)+', like '+LET[l][1]+'! Tap the big letter three times.'},
+  sound:function(l){return snd(l)+'!'},
+  meetDone:function(l){return snd(l)+', '+LET[l][1]+'! Great listening!'},
+  meetPic:function(l){return LET[l][1]+'. '+snd(l)+', '+LET[l][1]+'.'},
+  trace1:function(l){return "Let's write "+l+'! Watch the yellow dot, then trace with your pen from the green dot.'},
+  trace2:function(l){return 'Now write '+l+' again, all by yourself!'},
+  traceDone:function(l,p){return p+" That's "+l+'! '+snd(l)+'!'},
+  green:'Start at the green dot!',almost:'Almost! Follow the dotted line all the way.',watchDot:'Watch the yellow dot, then follow the dotted line from the green dot.',
+  huntQ:function(l){return l==='x'?'Which one ends with '+snd(l)+'? Like box!':'Which one starts with '+snd(l)+'? '+snd(l)+'.'},
+  huntRight:function(l,w,p){return p+' '+w+'! '+snd(l)+', '+w+'.'},
+  huntWrong:function(l,w,many){return "That's "+w+'. Listen: '+snd(l)+'. '+(many?'Look for the glowing one!':'Try again!')},
+  popIntro:function(l){return 'Pop the balloons with '+l+'! '+snd(l)+'!'},
+  popDone:function(l,p){return p+' You popped five '+l+' balloons!'},
+  popWrong:function(ch,l){return "That's "+ch+'. Find '+l+'!'},
+  blendIntro:function(n){return 'Word '+n+'. Tap each letter to hear its sound.'},
+  blendSlide:'Now slide the green button to blend the sounds!',
+  blendSay:function(w){return w.split('').map(snd).join('... ')+'... '+w+'!'},
+  blendWhich:function(w){return w+'. Which picture is '+w+'?'},
+  right:function(w,p){return p+' '+w+'!'},
+  listenAgain:function(w){return 'Listen again: '+w+'.'},
+  spellAsk:function(w,first){return w+'. '+w.split('').map(snd).join(', ')+'. What sound comes '+(first?'first':'next')+'?'},
+  spellDone:function(w,p){return p+' '+spellOut(w)+', '+w+'!'},
+  spellWrong:function(have,want){return 'That says '+snd(have)+'. We need '+snd(want)+'.'},
+  writeIntro:function(w){return "Let's write "+w+'. '+spellOut(w)+'. Trace each letter.'},
+  writeDone:function(w,p){return p+' You wrote '+w+'!'},
+  sightIntro:function(w){return 'This word is '+w+'. Find all three '+w+' words!'},
+  sightDone:function(w,p){return p+' That word is '+w+'!'},
+  sightWrong:function(x,w){return 'That word is '+x+'. Find '+w+'!'},
+  readTap:'Tap each word and read it with me.',readWhich:'Which picture matches the sentence?',
+  readRight:function(s,p){return p+' '+s},readAgain:function(s){return 'Read it again: '+s},
+  won:'You did it! You earned a new sticker! Tap the card to see it.',practiced:'Great practice! You are getting better and better.',
+  book:function(n){return n===1?'You have 1 sticker! Keep reading to get more!':'You have '+n+' stickers! Keep reading to get more!'},
+  bookNone:'Finish a level to get your first sticker!',
+  slow:'This is how I will talk.',
+};
+/* every sentence the app can say, for pre-recording */
+function allPhrases(){
+  var out=[],add=function(s){out.push(s)};
+  ['hi','back','locked','green','almost','watchDot','blendSlide','readTap','readWhich','won','practiced','bookNone','slow'].forEach(function(k){add(SAY[k])});
+  PRAISES.forEach(add);add('Try again!');add('Look for the glowing one!');for(var bn=1;bn<=8;bn++)add(SAY.blendIntro(bn));
+  var L=Object.keys(LET);
+  L.forEach(function(l){
+    add(SAY.meet(l));add(SAY.sound(l));add(SAY.meetDone(l));add(SAY.meetPic(l));add(SAY.trace1(l));add(SAY.trace2(l));add(SAY.huntQ(l));add(SAY.popIntro(l));
+    add("That's "+l+'!');add('Find '+l+'!');add('You popped five '+l+' balloons!');add(snd(l));
+    [LET[l][1],LET[l][3]].forEach(function(w){add(w+'!');add(snd(l)+', '+w+'.');add("That's "+w+'.');});
+    add('Listen: '+snd(l)+'.');
+  });
+  L.forEach(function(k){add(LET[k][1]);add("That's "+LET[k][1]+'.');add("That's "+LET[k][3]+'.')});
+  for(var n=1;n<=8;n++)add('Word '+n+'.');
+  var words={};GROUPS.forEach(function(g){(g.blend||[]).concat(g.spell||[],g.write||[]).forEach(function(w){words[w]=1})});
+  Object.keys(words).forEach(function(w){add(w);add(SAY.blendSay(w));add(SAY.blendWhich(w));add(w+'!');add(SAY.listenAgain(w));
+    add(SAY.spellAsk(w,true));add(SAY.spellAsk(w,false));add(spellOut(w)+', '+w+'!');add(SAY.writeIntro(w));add('You wrote '+w+'!')});
+  L.forEach(function(a){L.forEach(function(b){if(snd(a)!==snd(b))add(SAY.spellWrong(a,b))})});
+  SIGHT_POOL.forEach(function(w){add(w);add(SAY.sightIntro(w));add('That word is '+w+'!');add('That word is '+w+'.');add('Find '+w+'!')});
+  GROUPS.forEach(function(g){(g.read||[]).forEach(function(r){var s=r[0];add(s);add(SAY.readAgain(s));s.split(' ').forEach(function(x){add(x.replace(/[.]/,''))})})});
+  for(var i=1;i<=STICKER_MAX;i++)add(SAY.book(i));
+  return out;
+}
+var splitSent=function(t){return String(t).trim().split(/(?<=[.!?:])\s+/).filter(Boolean)};
+var akey=function(s){return s.trim().toLowerCase().replace(/\s+/g,' ')};
+if(typeof module!=='undefined')module.exports={allPhrases:allPhrases,splitSent:splitSent,akey:akey,SOUND_IPA:SOUND_IPA};
+
+/* ============ SIBOL READS: English phonics for young/slow readers ============ */
+lang='en';
+let rs=store.get('reads',{done:{},stickers:[],slow:false});
+const saveRs=()=>store.set('reads',rs);
+window.RATE=rs.slow?.82:1;
+
 const STICKERS='🦄🐬🦋🌈🚀🐢🦒🍓🐼🦕🌻🐧🦉🍩🐳⭐🎈🐞🦜🍉🧁🐨🦩🌟🎠🐠🦖🍦🐣🌵🎨🐝🦚🍭🌙🎸🍪🐰🚂🌺🐿️🪐🎂🦔🐌🍒🎁🐻'.match(/\p{Extended_Pictographic}️?/gu);
 
 /* lowercase letter strokes in a 100x140 box: top 10, midline 50, baseline 100, tail 135 */
@@ -1032,11 +1121,11 @@ function home(){
   html+=`</div><p class="ptip">Tip for grown-ups: one or two levels a day is plenty. Sit with her, say the sounds together, and cheer every try.</p>`;
   app.innerHTML=html;
   drawRoad();
-  app.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!unlocked(i)){sfx.oops();say('Finish the glowing level first!');return}go(()=>runNode(i))});
+  app.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!unlocked(i)){sfx.oops();say(SAY.locked);return}go(()=>runNode(i))});
   $('#book').onclick=()=>go(stickerBook);
   holdButton($('#grown'),()=>go(grownUps));
   const cur=app.querySelector('.node.cur');if(cur)setTimeout(()=>cur.scrollIntoView({block:'center',behavior:'smooth'}),300);
-  say(ci===0&&!rs.done[NODES[0].id]?"Hi! I'm Sibol. Let's learn to read together! Tap the glowing circle.":'Welcome back! Tap the glowing circle to play.');
+  say(ci===0&&!rs.done[NODES[0].id]?SAY.hi:SAY.back);
 }
 function drawRoad(){
   const t=$('#trail'),r=t.getBoundingClientRect(),road=$('#road');
@@ -1078,22 +1167,22 @@ function reward(i){
    <button class="bigbtn" id="cont">Keep going!</button></div>`;
   if(st)$('#sc').onclick=()=>{$('#sc').classList.add('flip');sfx.magic();confetti(80)};
   $('#cont').onclick=()=>go(home);
-  say(st?'You did it! You earned a new sticker! Tap the card to see it.':'Great practice! You are getting better and better.');
+  say(st?SAY.won:SAY.practiced);
 }
 
 /* ---- activities ---- */
 const ACT={};
-const praise=()=>pick(['Great job!','Yes!','You got it!','Super!','Wow!','Well done!']);
+const praise=()=>pick(PRAISES);
 const letterSay=l=>`${l}. ${l} says ${snd(l)}. ${snd(l)}, ${LET[l][1]}.`;
 
 ACT.meet=(l,done)=>{
   const [s,kw,emo]=LET[l];let taps=0;
-  const box=shell(`This is the letter ${l}. It says ${s}, like ${kw}! Tap the big letter three times.`);
+  const box=shell(SAY.meet(l));
   box.innerHTML=`<div class="meet"><button class="bigL" id="bl">${l.toUpperCase()}${l}</button><button class="pic1" id="pk"><span class="emo">${emo}</span><span class="kw"><b>${kw[0]}</b>${kw.slice(1)}</span></button></div>
    <div class="taps">${[0,1,2].map(()=>'<i></i>').join('')}</div><button class="bigbtn" id="go" disabled>Next</button>`;
-  $('#bl').onclick=()=>{sfx.pop();$('#bl').style.animation='none';void $('#bl').offsetWidth;$('#bl').style.animation='';speakRaw(`${s}!`);
-    if(taps<3){box.querySelectorAll('.taps i')[taps].classList.add('on');taps++;if(taps===3){$('#go').disabled=false;setTimeout(()=>say(`${s}, ${kw}! Great listening!`),900)}}};
-  $('#pk').onclick=()=>speakRaw(`${kw}. ${s}, ${kw}.`);
+  $('#bl').onclick=()=>{sfx.pop();$('#bl').style.animation='none';void $('#bl').offsetWidth;$('#bl').style.animation='';speakRaw(SAY.sound(l));
+    if(taps<3){box.querySelectorAll('.taps i')[taps].classList.add('on');taps++;if(taps===3){$('#go').disabled=false;setTimeout(()=>say(SAY.meetDone(l)),900)}}};
+  $('#pk').onclick=()=>speakRaw(SAY.meetPic(l));
   $('#go').onclick=done;
 };
 
@@ -1122,7 +1211,7 @@ function tracer(host,l,level,onDone,o={}){
   function mark(p){const g=geo(),tol=g.s*11;strokes[cur].pts.forEach((q,i)=>{if(!cov.has(i)&&dist(toPx(q,g),p)<tol)cov.add(i)})}
   attachInk(wrap,{
     down(p){if(!strokes[cur])return false;const g=geo();
-      if(dist(toPx(strokes[cur].pts[0],g),p)>g.s*20&&strokes[cur].L>3){sfx.oops();say('Start at the green dot!',{cap:false});return false}
+      if(dist(toPx(strokes[cur].pts[0],g),p)>g.s*20&&strokes[cur].L>3){sfx.oops();say(SAY.green,{cap:false});return false}
       live=[p];mark(p);render()},
     move(p){live.push(p);mark(p);render()},
     up(p,moved,t,cancel){
@@ -1131,29 +1220,29 @@ function tracer(host,l,level,onDone,o={}){
       if(ok&&!cancel){const q=document.createElementNS(NS,'path');q.setAttribute('d',st.d);q.setAttribute('fill','none');q.setAttribute('stroke',getComputedStyle(document.documentElement).getPropertyValue('--isl')||'#2F9E55');q.setAttribute('stroke-width','9');q.setAttribute('stroke-linecap','round');q.setAttribute('stroke-linejoin','round');fl.appendChild(q);
         sfx.pop();cur++;cov=new Set();miss=0;showStart();
         if(cur>=strokes.length){hint.innerHTML=sparkles(50,75);onDone()}}
-      else{cov=new Set();miss++;say(miss>1?'Watch the yellow dot, then follow the dotted line from the green dot.':'Almost! Follow the dotted line all the way.',{cap:false})}
+      else{cov=new Set();miss++;say(miss>1?SAY.watchDot:SAY.almost,{cap:false})}
     }
   });
   showStart();new ResizeObserver(render).observe(wrap);
 }
 ACT.trace=(l,level,done)=>{
-  const box=shell(level===1?`Let's write ${l}! Watch the yellow dot, then trace with your pen from the green dot.`:`Now write ${l} again, all by yourself!`,`Write <span style="color:var(--isl)">${l}</span>`);
-  tracer(box,l,level,()=>{say(`${praise()} That's ${l}! ${snd(l)}!`);setTimeout(done,1600)});
+  const box=shell(level===1?SAY.trace1(l):SAY.trace2(l),`Write <span style="color:var(--isl)">${l}</span>`);
+  tracer(box,l,level,()=>{say(SAY.traceDone(l,praise()));setTimeout(done,1600)});
 };
 ACT.hunt=(l,done)=>{
   const g=Object.keys(LET).indexOf(l);let round=0;
   const others=Object.keys(LET).filter(k=>k!==l&&k!=='q'&&k!=='x'&&LET[k][0]!==LET[l][0]);
   const box=shell(null,'Which one starts with…');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const want=round===0?[LET[l][1],LET[l][2]]:[LET[l][3],LET[l][4]];
     const opts=shuffle([want,...shuffle(others).slice(0,2).map(k=>[LET[k][1],LET[k][2]])]);let wrong=0;
-    const q=l==='x'?`Which one ends with ${snd(l)}? Like box!`:`Which one starts with ${snd(l)}? ${snd(l)}.`;
+    const q=SAY.huntQ(l);
     box.innerHTML=`<button class="saybig" id="sb">${ICON.speak}</button><div class="atitle" style="font-size:44px;color:var(--isl)">${l}</div><div class="cards3">${opts.map(([w,e])=>`<button class="pcard3" data-w="${w}"><span class="emo">${e}</span><span>${w}</span></button>`).join('')}</div>`;
     curLine=q;say(q);$('#sb').onclick=()=>say(q);
     box.querySelectorAll('.pcard3').forEach(c=>c.onclick=()=>{
-      if(c.dataset.w===want[0]){c.classList.add('ok');sfx.ding();say(`${praise()} ${want[0]}! ${snd(l)}, ${want[0]}.`);round++;setTimeout(()=>round<2?play():done(),2000)}
+      if(c.dataset.w===want[0]){c.classList.add('ok');sfx.ding();say(SAY.huntRight(l,want[0],praise()));round++;setTimeout(()=>round<2?play():done(),2000)}
       else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;
-        say(`That's ${c.dataset.w}. Listen: ${snd(l)}. ${wrong>1?'Look for the glowing one!':'Try again!'}`);
+        say(SAY.huntWrong(l,c.dataset.w,wrong>1));
         if(wrong>1)box.querySelector(`[data-w="${want[0]}"]`).classList.add('hintme')}
     });
   };
@@ -1161,7 +1250,7 @@ ACT.hunt=(l,done)=>{
 };
 ACT.pop=(l,gi,done)=>{
   const pool=[...new Set((learned(gi)).split(''))].filter(k=>k!==l);
-  const box=shell(`Pop the balloons with ${l}! ${snd(l)}!`,`Pop every <span style="color:var(--isl)">${l}</span>`);
+  const box=shell(SAY.popIntro(l),`Pop every <span style="color:var(--isl)">${l}</span>`);
   box.innerHTML=`<div class="score" id="sc">${'⚪'.repeat(5)}</div><div class="popzone" id="pz"></div>`;
   const pz=$('#pz'),my=RUN,cols=['#E8484F','#2D78B8','#F29A1F','#8A4FBF','#2F9E55','#D35FA0'];let got=0,n=0,over=false;
   const spawn=()=>{if(!alive(my)||over)return;
@@ -1171,8 +1260,8 @@ ACT.pop=(l,gi,done)=>{
     b.addEventListener('animationend',e=>{if(e.animationName==='rise')b.remove()});
     b.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&penActive())return;if(b.classList.contains('popped'))return;
       if(ch===l){b.classList.add('popped');tone(500+got*80,0,.12,'square',.08);got++;$('#sc').textContent='🟢'.repeat(got)+'⚪'.repeat(Math.max(0,5-got));speakRaw(snd(l));
-        if(got>=5){over=true;setTimeout(()=>{say(`${praise()} You popped five ${l} balloons!`);setTimeout(done,1400)},400)}}
-      else{b.classList.add('nope');sfx.oops();say(`That's ${ch}. Find ${l}!`,{cap:false})}
+        if(got>=5){over=true;setTimeout(()=>{say(SAY.popDone(l,praise()));setTimeout(done,1400)},400)}}
+      else{b.classList.add('nope');sfx.oops();say(SAY.popWrong(ch,l),{cap:false})}
       setTimeout(()=>{if(b.classList.contains('popped'))b.remove()},320)});
     pz.appendChild(b);setTimeout(spawn,rs.slow?1500:1150);
   };
@@ -1180,23 +1269,23 @@ ACT.pop=(l,gi,done)=>{
 };
 ACT.blend=(words,done)=>{
   let wi=0;const box=shell(null,'Sound it out');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const w=words[wi],letters=[...w];let heard=new Set(),wrong=0;
     const others=shuffle(Object.keys(WORDPIC).filter(x=>x!==w)).slice(0,2);
     box.innerHTML=`<div class="tiles">${letters.map((c,i)=>`<button class="tile" data-i="${i}">${c}</button>`).join('')}</div>
       <div class="slider" id="sl" hidden><div class="knob">▶</div><span>Slide to read!</span></div><div id="pickw" class="cards3" hidden>${shuffle([w,...others]).map(x=>`<button class="pcard3" data-w="${x}"><span class="emo">${WORDPIC[x]}</span></button>`).join('')}</div>`;
-    curLine='Tap each letter to hear its sound.';say(`Word ${wi+1}. Tap each letter to hear its sound.`);
+    curLine=SAY.blendIntro(wi+1);say(curLine);
     box.querySelectorAll('.tile').forEach(t=>t.onclick=()=>{const c=letters[t.dataset.i];t.classList.add('heard');speakRaw(snd(c));heard.add(t.dataset.i);
-      if(heard.size===letters.length&&$('#sl').hidden){$('#sl').hidden=false;curLine='Now slide the green button to blend the sounds!';say(curLine)}});
+      if(heard.size===letters.length&&$('#sl').hidden){$('#sl').hidden=false;curLine=SAY.blendSlide;say(curLine)}});
     const sl=$('#sl'),kn=sl.querySelector('.knob');let sliding=false,lit=-1;
     attachInk(sl,{down(p){sliding=true;return true},move(p){const r=sl.getBoundingClientRect(),x=Math.max(0,Math.min(r.width-60,p.x-30));kn.style.left=(x+4)+'px';
         const k=Math.min(letters.length-1,Math.floor(x/(r.width-60)*letters.length));if(k!==lit){lit=k;box.querySelectorAll('.tile').forEach((t,i)=>t.classList.toggle('glow',i===k));tone(400+k*120,0,.1,'sine',.08)}},
       up(){const r=sl.getBoundingClientRect(),x=parseFloat(kn.style.left||0);box.querySelectorAll('.tile').forEach(t=>t.classList.remove('glow'));lit=-1;
-        if(x>r.width*.6){speakRaw(`${letters.map(snd).join('... ')}... ${w}!`).then(()=>{if(!$('#pickw'))return;$('#pickw').hidden=false;curLine=`${w}. Which picture is ${w}?`;say(curLine)})}
+        if(x>r.width*.6){speakRaw(SAY.blendSay(w)).then(()=>{if(!$('#pickw'))return;$('#pickw').hidden=false;curLine=SAY.blendWhich(w);say(curLine)})}
         kn.style.left='4px'}});
     box.querySelectorAll('#pickw .pcard3').forEach(c=>c.onclick=()=>{
-      if(c.dataset.w===w){c.classList.add('ok');sfx.ding();say(`${praise()} ${w}!`);wi++;setTimeout(()=>wi<words.length?play():done(),1700)}
-      else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;say(`Listen again: ${w}.`);if(wrong>1)box.querySelector(`#pickw [data-w="${w}"]`).classList.add('hintme')}
+      if(c.dataset.w===w){c.classList.add('ok');sfx.ding();say(SAY.right(w,praise()));wi++;setTimeout(()=>wi<words.length?play():done(),1700)}
+      else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;say(SAY.listenAgain(w));if(wrong>1)box.querySelector(`#pickw [data-w="${w}"]`).classList.add('hintme')}
     });
   };
   play();
@@ -1204,20 +1293,20 @@ ACT.blend=(words,done)=>{
 ACT.spell=(words,gi,done)=>{
   let wi=0;const box=shell(null,'Spell it');
   const pool=learned(gi).split('');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const w=words[wi];let pos=0,wrong=0;
     const extra=shuffle(pool.filter(c=>!w.includes(c))).slice(0,2);
     box.innerHTML=`<button class="pcard3" id="pw" style="width:160px"><span class="emo">${WORDPIC[w]}</span></button><div class="slots">${[...w].map(()=>'<div class="slot"></div>').join('')}</div>
       <div class="ltiles">${shuffle([...w,...extra]).map(c=>`<button class="ltile">${c}</button>`).join('')}</div>`;
     const slots=[...box.querySelectorAll('.slot')];slots[0].classList.add('cur');
-    const ask=()=>{curLine=`${w}. ${[...w].map(snd).join(', ')}. What sound comes ${pos===0?'first':'next'}?`;say(curLine)};
+    const ask=()=>{curLine=SAY.spellAsk(w,pos===0);say(curLine)};
     ask();$('#pw').onclick=()=>speakRaw(w);
     box.querySelectorAll('.ltile').forEach(t=>t.onclick=()=>{
       if(t.disabled)return;
       if(t.textContent===w[pos]){t.disabled=true;speakRaw(snd(w[pos]));slots[pos].textContent=w[pos];slots[pos].classList.remove('cur');slots[pos].classList.add('full');pos++;wrong=0;box.querySelectorAll('.ltile').forEach(x=>x.classList.remove('hintme'));
-        if(pos===w.length){sfx.ding();setTimeout(()=>say(`${praise()} ${[...w].join(' ')}, ${w}!`),400);wi++;setTimeout(()=>wi<words.length?play():done(),2400)}else slots[pos].classList.add('cur')}
+        if(pos===w.length){sfx.ding();setTimeout(()=>say(SAY.spellDone(w,praise())),400);wi++;setTimeout(()=>wi<words.length?play():done(),2400)}else slots[pos].classList.add('cur')}
       else{t.classList.remove('no');void t.offsetWidth;t.classList.add('no');sfx.oops();wrong++;
-        say(`That says ${snd(t.textContent)}. We need ${snd(w[pos])}.`,{cap:false});
+        say(SAY.spellWrong(t.textContent,w[pos]),{cap:false});
         if(wrong>1){const h=[...box.querySelectorAll('.ltile')].find(x=>!x.disabled&&x.textContent===w[pos]);if(h)h.classList.add('hintme')}}
     });
   };
@@ -1225,11 +1314,11 @@ ACT.spell=(words,gi,done)=>{
 };
 ACT.write=(words,done)=>{
   let wi=0;const box=shell(null,'Write the word');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const w=words[wi];let li=0;box.innerHTML=`<div class="emo">${WORDPIC[w]}</div><div class="wordtrace" id="wt"></div>`;
-    curLine=`Let's write ${w}. ${[...w].join(', ')}. Trace each letter.`;say(curLine);
+    curLine=SAY.writeIntro(w);say(curLine);
     const host=$('#wt');
-    const nextLetter=()=>{if(li>=w.length){say(`${praise()} You wrote ${w}!`);wi++;setTimeout(()=>wi<words.length?play():done(),1800);return}
+    const nextLetter=()=>{if(li>=w.length){say(SAY.writeDone(w,praise()));wi++;setTimeout(()=>wi<words.length?play():done(),1800);return}
       const c=w[li++];tracer(host,c,li===1?1:2,()=>{speakRaw(snd(c));setTimeout(nextLetter,500)},{small:true})};
     nextLetter();
   };
@@ -1237,31 +1326,31 @@ ACT.write=(words,done)=>{
 };
 ACT.sight=(words,done)=>{
   let wi=0;const box=shell(null,'Look words');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const w=words[wi];const grid=shuffle([w,w,w,...shuffle(['I','a','the','see','is','can','my','on','to','it','in','at'].filter(x=>x!==w)).slice(0,6)]);let found=0;
     box.innerHTML=`<p style="font-size:20px">We know this word just by looking!</p><button class="bigL" id="sw" style="font-size:clamp(70px,22vw,120px);padding:6px 30px">${w}</button><div class="wordgrid">${grid.map(x=>`<button class="wbtn" data-w="${x}">${x}</button>`).join('')}</div>`;
-    curLine=`This word is ${w}. Find all three ${w} words!`;say(curLine);$('#sw').onclick=()=>speakRaw(w);
+    curLine=SAY.sightIntro(w);say(curLine);$('#sw').onclick=()=>speakRaw(w);
     box.querySelectorAll('.wbtn').forEach(b=>b.onclick=()=>{
       if(b.classList.contains('ok'))return;
-      if(b.dataset.w===w){b.classList.add('ok');tone(600+found*120,0,.15);speakRaw(w);found++;if(found===3){say(`${praise()} That word is ${w}!`);wi++;setTimeout(()=>wi<words.length?play():done(),1700)}}
-      else{b.classList.remove('no');void b.offsetWidth;b.classList.add('no');sfx.oops();say(`That word is ${b.dataset.w}. Find ${w}!`,{cap:false})}
+      if(b.dataset.w===w){b.classList.add('ok');tone(600+found*120,0,.15);speakRaw(w);found++;if(found===3){say(SAY.sightDone(w,praise()));wi++;setTimeout(()=>wi<words.length?play():done(),1700)}}
+      else{b.classList.remove('no');void b.offsetWidth;b.classList.add('no');sfx.oops();say(SAY.sightWrong(b.dataset.w,w),{cap:false})}
     });
   };
   play();
 };
 ACT.read=(sents,done)=>{
   let si=0;const box=shell(null,'Read it!');
-  const play=()=>{
+  const play=()=>{if(!box.isConnected)return;
     const [s,ok,bad]=sents[si],ws=s.split(' ');let heard=new Set(),wrong=0;
     box.innerHTML=`<div class="sentbox">${ws.map((x,i)=>`<button class="sw" data-i="${i}">${x}</button>`).join('')}</div>
       <button class="pill" id="rtm">${ICON.speak} Read to me</button><div class="cards2" id="pk" hidden>${shuffle([ok,bad]).map(e=>`<button class="pcard3" data-e="${e}"><span class="emo">${e}</span></button>`).join('')}</div>`;
-    curLine='Tap each word and read it with me.';say(curLine);
-    const showPick=()=>{if(!$('#pk').hidden)return;$('#pk').hidden=false;curLine='Which picture matches the sentence?';say(curLine)};
+    curLine=SAY.readTap;say(curLine);
+    const showPick=()=>{if(!$('#pk')||!$('#pk').hidden)return;$('#pk').hidden=false;curLine=SAY.readWhich;say(curLine)};
     box.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{b.classList.add('heard');speakRaw(b.textContent.replace(/[.]/,''));heard.add(b.dataset.i);if(heard.size===ws.length)setTimeout(showPick,900)});
     $('#rtm').onclick=async()=>{const my=RUN;const els=[...box.querySelectorAll('.sw')];for(const e of els){if(!alive(my))return;e.classList.add('on');await speakRaw(e.textContent.replace(/[.]/,''));e.classList.remove('on');e.classList.add('heard')}heard=new Set(els.map(e=>e.dataset.i));showPick()};
     box.querySelectorAll('#pk .pcard3').forEach(c=>c.onclick=()=>{
-      if(c.dataset.e===ok){c.classList.add('ok');sfx.ding();say(`${praise()} ${s}`);si++;setTimeout(()=>si<sents.length?play():done(),2400)}
-      else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;say(`Read it again: ${s}`);if(wrong>1)box.querySelector(`#pk [data-e="${ok}"]`).classList.add('hintme')}
+      if(c.dataset.e===ok){c.classList.add('ok');sfx.ding();say(SAY.readRight(s,praise()));si++;setTimeout(()=>si<sents.length?play():done(),2400)}
+      else{c.classList.remove('no');void c.offsetWidth;c.classList.add('no');sfx.oops();wrong++;say(SAY.readAgain(s));if(wrong>1)box.querySelector(`#pk [data-e="${ok}"]`).classList.add('hintme')}
     });
   };
   play();
@@ -1273,7 +1362,7 @@ function stickerBook(){
   app.innerHTML=`<div class="ashell"><button class="round" id="back">${ICON.home}</button><div class="atitle" style="flex:1">My stickers</div></div>
    <div class="book">${STICKERS.map(s=>rs.stickers.includes(s)?`<div>${s}</div>`:`<div class="empty">?</div>`).join('')}</div>`;
   $('#back').onclick=()=>go(home);
-  say(rs.stickers.length?`You have ${rs.stickers.length} stickers! Keep reading to get more!`:'Finish a level to get your first sticker!');
+  say(rs.stickers.length?SAY.book(rs.stickers.length):SAY.bookNone);
 }
 function grownUps(){
   current='screen';
@@ -1285,7 +1374,7 @@ function grownUps(){
     <div class="row"><button class="pill" id="all">${rs.all?'Lock levels again':'Open all levels'}</button><button class="pill" id="reset">Start over</button></div></div>
    <div class="card"><b>Helping a slow reader</b><ul style="margin:0;padding-left:20px"><li>Short and happy: 10–15 minutes, then stop while it's still fun.</li><li>Say the sounds out loud together, and let her copy the voice.</li><li>Repeat levels. Replaying a done level is great practice.</li><li>Praise effort (“You kept trying!”), not just right answers.</li><li>If she struggles a lot with letters or sounds, ask her teacher or doctor about a reading check-up.</li></ul></div></div>`;
   $('#back').onclick=()=>go(home);
-  app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rs.slow=b.dataset.s==='1';window.RATE=rs.slow?.82:1;try{if(window.AndroidTTS&&AndroidTTS.setRate)AndroidTTS.setRate(window.RATE)}catch(e){}saveRs();grownUps();say('This is how I will talk.')});
+  app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{rs.slow=b.dataset.s==='1';window.RATE=rs.slow?.82:1;try{if(window.AndroidTTS&&AndroidTTS.setRate)AndroidTTS.setRate(window.RATE)}catch(e){}saveRs();grownUps();say(SAY.slow)});
   $('#all').onclick=()=>{rs.all=!rs.all;saveRs();grownUps()};
   $('#reset').onclick=e=>{if(e.currentTarget.dataset.sure){rs={done:{},stickers:[],slow:rs.slow};saveRs();go(home)}else{e.currentTarget.dataset.sure=1;e.currentTarget.textContent='Tap again to erase progress'}};
 }

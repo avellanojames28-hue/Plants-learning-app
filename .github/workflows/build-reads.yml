@@ -10,6 +10,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Natural voice (Piper) - record every sentence
+        working-directory: SibolReads/tools
+        run: |
+          which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          pip install -q piper-tts numpy
+          V=https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high
+          curl -sSL -o voice.onnx $V/en_US-lessac-high.onnx
+          curl -sSL -o voice.onnx.json $V/en_US-lessac-high.onnx.json
+          node phrases.js > phrases.json
+          python gen_audio.py voice.onnx ../app/src/main/assets/audio
+          du -sh ../app/src/main/assets/audio
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.9' }
       - run: gradle :app:assembleDebug --no-daemon
